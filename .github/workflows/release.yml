@@ -1,0 +1,39 @@
+---
+name: Release
+
+on:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag-name:
+        description: Tag name that the major tag will point to
+        required: true
+
+env:
+  TAG_NAME: ${{ github.event.inputs.tag-name || github.event.release.tag_name }}
+
+jobs:
+  gh-release-update:
+    if: ${{ github.repository_owner == 'DariuszPorowski' }}
+    name: GitHub Release
+    environment:
+      name: Release
+      url: ${{ steps.gh-release.outputs.url }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update release to the latest
+        id: gh-release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: false
+
+      - name: Update the major tag to include the ${{ env.TAG_NAME }} changes
+        id: update-major-tag
+        uses: actions/publish-action@v0.2.2
+        with:
+          source-tag: ${{ env.TAG_NAME }}

@@ -1,0 +1,79 @@
+---
+name-template: v$RESOLVED_VERSION
+tag-template: v$RESOLVED_VERSION
+footer: |
+
+  See details of all code changes: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION since previous release.
+template: |
+  ## 🔄️ What's Changed
+
+  $CHANGES
+
+  ## 👥 Contributors
+
+  $CONTRIBUTORS
+
+categories:
+  - title: 💥 Breaking
+    labels:
+      - major
+      - breaking
+  - title: 🚀 Features
+    labels:
+      - minor
+      - feature
+      - enhancement
+  - title: 🐛 Bug Fixes
+    labels:
+      - fix
+      - bugfix
+      - bug
+  - title: 🧰 Maintenance
+    labels:
+      - maintenance
+      - chore
+  - title: 📚 Documentation
+    labels:
+      - doc
+      - docs
+      - documentation
+  - title: Other changes
+    label: patch
+  - title: ⬆️ Dependencies
+    labels:
+      - dependencies
+      - deps
+    collapse-after: 3
+  - title: 🚨 Security
+    label: security
+    collapse-after: 3
+exclude-labels:
+  - skip-changelog
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+version-resolver:
+  major:
+    labels:
+      - major
+      - breaking
+  minor:
+    labels:
+      - minor
+      - feature
+      - enhancement
+  patch:
+    labels:
+      - patch
+      - fix
+      - bugfix
+      - bug
+      - maintenance
+      - chore
+      - doc
+      - docs
+      - documentation
+      - deps
+      - dependencies
+      - security
+  default: patch
+# TODO autolabeler https://github.com/release-drafter/release-drafter/#autolabeler
