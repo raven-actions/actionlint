@@ -1,0 +1,36 @@
+---
+name: Draft Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  # pull_request:
+  #   # Only following types are handled by the action, but one can default to all as well
+
+permissions: {}
+
+jobs:
+  draft-release:
+    if: ${{ github.repository_owner == 'DariuszPorowski' }}
+    name: Draft Release
+    permissions:
+      contents: write
+      pull-requests: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Release Drafter
+        uses: release-drafter/release-drafter@v5
+        id: release-drafter
+        with:
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Get Release URL
+        run: |
+          echo "${RELEASE_URL}"
+          echo "${RELEASE_URL}" >> $GITHUB_STEP_SUMMARY
+        env:
+          RELEASE_URL: ${{ steps.release-drafter.outputs.html_url }}
