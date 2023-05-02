@@ -1,0 +1,50 @@
+---
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+name: 🚀 Feature request
+description: Suggest an idea for this project 🏖
+title: "🚀 [feature]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this new feature idea!
+  - type: textarea
+    id: description
+    attributes:
+      label: 🚀 Feature description
+      description: A clear and concise description of the feature proposal.
+      placeholder: A clear and concise description of the feature proposal.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 🔈 Motivation
+      description: Please describe the motivation for this proposal.
+      placeholder: Please describe the motivation for this proposal.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🛰 Alternatives
+      description: A clear and concise description of any alternative solutions or features you've considered.
+      placeholder: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Additional context
+      description: Add any other context or screenshots about the feature request here.
+      placeholder: Add any other context or screenshots about the feature request here.
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 📜 Code of Conduct
+      description: By submitting this issue, you agree to follow our [`Code of Conduct`](https://github.com/DariuszPorowski/ghaction-actionlint/blob/main/.github/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true
