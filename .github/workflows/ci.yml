@@ -81,6 +81,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Dump Context
+        uses: DariuszPorowski/dump-context-action@v1
+        with:
+          vars-context: ${{ toJson(vars) }}
+          secrets-context: ${{ toJson(secrets) }}
+          needs-context: ${{ toJson(needs) }}
+          inputs-context: ${{ toJson(inputs) }}
+
       - name: actionlint Action (old version)
         uses: ./
         with:
