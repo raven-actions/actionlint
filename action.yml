@@ -343,7 +343,7 @@ runs:
           }
 
           // set default tool flags
-          const toolFlags = ['-verbose', '-color']
+          const toolFlags = ['-verbose']
           if(DEBUG === 'true') {
             toolFlags.push('-debug')
           }
