@@ -1,0 +1,28 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://www.linkedin.com"
+    }
+  ],
+  "httpHeaders": [
+    {
+      "urls": [
+        "https://docs.github.com",
+        "https://github.com",
+        "https://guides.github.com",
+        "https://help.github.com"
+      ],
+      "headers": {
+        "Accept-Encoding": "deflate, compress, gzip, br, zstd"
+      }
+    }
+  ],
+  "timeout": "20s",
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "30s",
+  "aliveStatusCodes": [
+    200,
+    206
+  ]
+}

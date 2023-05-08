@@ -1,5 +1,5 @@
----
 # https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+---
 name: 🐛 Bug Report
 description: If something isn't working 🔧
 title: "🐛 [bug]: "
@@ -90,7 +90,7 @@ body:
     id: terms
     attributes:
       label: 📜 Code of Conduct
-      description: By submitting this issue, you agree to follow our [`Code of Conduct`](https://github.com/DariuszPorowski/ghaction-actionlint/blob/main/.github/CODE_OF_CONDUCT.md)
+      description: By submitting this issue, you agree to follow our [`Code of Conduct`](../CODE_OF_CONDUCT.md)
       options:
         - label: I agree to follow this project's Code of Conduct.
           required: true

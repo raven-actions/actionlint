@@ -1,5 +1,5 @@
 ---
-name: Release
+name: Publish Release
 
 on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
@@ -17,11 +17,7 @@ env:
 
 jobs:
   gh-release-update:
-    if: ${{ github.repository_owner == 'DariuszPorowski' }}
     name: GitHub Release
-    environment:
-      name: Release
-      url: ${{ steps.gh-release.outputs.url }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
