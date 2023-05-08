@@ -4,7 +4,7 @@ description: Run actionlint in your GitHub workflow
 author: Dariusz Porowski
 branding:
   icon: check-circle # https://feathericons.com
-  color: blue
+  color: gray-dark
 
 inputs:
   version:
