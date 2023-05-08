@@ -69,8 +69,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Dump Context
-        uses: raven-actions/dump-contexts@v1
+      - name: Debug
+        uses: raven-actions/debug@v1
         with:
           vars-context: ${{ toJson(vars) }}
           secrets-context: ${{ toJson(secrets) }}

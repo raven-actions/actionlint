@@ -18,13 +18,21 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-latest
     steps:
+      - name: Get GitHub App Token
+        uses: wow-actions/use-app-token@v2
+        id: get-token
+        with:
+          app_id: ${{ secrets.ORG_BOT_APP_ID }}
+          private_key: ${{ secrets.ORG_BOT_PRIVATE_KEY }}
+          fallback: ${{ github.token }}
+
       - name: Run Release Drafter
         uses: release-drafter/release-drafter@v5
         id: release-drafter
         with:
           prerelease: true
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ steps.get-token.outputs.BOT_TOKEN }}
 
       - name: Get Release URL
         run: |
