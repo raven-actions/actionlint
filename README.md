@@ -1,9 +1,9 @@
 # ✅ actionlint Action
 
 [![GitHub - marketplace](https://img.shields.io/badge/marketplace-actionlint-blue?logo=github&style=flat-square)](https://github.com/marketplace/actions/actionlint)
-[![GitHub - release](https://img.shields.io/github/v/release/DariuszPorowski/ghaction-actionlint?style=flat-square)](https://github.com/DariuszPorowski/ghaction-actionlint/releases/latest)
-[![GitHub - ci](https://img.shields.io/github/actions/workflow/status/DariuszPorowski/ghaction-actionlint/ci.yml?logo=github&label=CI&style=flat-square&branch=main&event=push)](https://github.com/DariuszPorowski/ghaction-actionlint/actions/workflows/ci.yml?query=branch%3Amain+event%3Apush)
-[![GitHub - license](https://img.shields.io/github/license/DariuszPorowski/ghaction-actionlint?style=flat-square)](https://github.com/DariuszPorowski/ghaction-actionlint/blob/main/LICENSE)
+[![GitHub - release](https://img.shields.io/github/v/release/raven-actions/actionlint?style=flat-square)](https://github.com/raven-actions/actionlint/releases/latest)
+[![GitHub - ci](https://img.shields.io/github/actions/workflow/status/raven-actions/actionlint/ci.yml?logo=github&label=CI&style=flat-square&branch=main&event=push)](https://github.com/raven-actions/actionlint/actions/workflows/ci.yml?query=branch%3Amain+event%3Apush)
+[![GitHub - license](https://img.shields.io/github/license/raven-actions/actionlint?style=flat-square)](https://github.com/raven-actions/actionlint/blob/main/LICENSE)
 
 This [GitHub Action](https://github.com/features/actions) allows you to quickly and easily run [actionlint](https://github.com/rhysd/actionlint) in your GitHub workflow using native Runner OS without 3rd party dependencies. It is based on an official action lint usage proposal from [Use actionlint on GitHub Actions](https://github.com/rhysd/actionlint/blob/main/docs/usage.md#use-actionlint-on-github-actions) together with [Problem Matchers](https://github.com/rhysd/actionlint/blob/main/docs/usage.md#problem-matchers).
 
@@ -11,9 +11,9 @@ This [GitHub Action](https://github.com/features/actions) allows you to quickly 
 - Uses [GitHub cache](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows) for caching `actionlint` binaries for faster and more efficient workflow run.
   - 3rd party `actionlint` dependencies like `shellcheck` or `pyflakes` are not cached, but action installs them if not present on the Runner.
 
-![demo-error](https://raw.githubusercontent.com/DariuszPorowski/ghaction-actionlint/main/assets/images/demo-error.png)
+![demo-error](https://raw.githubusercontent.com/raven-actions/actionlint/main/assets/images/demo-error.png)
 
-![demo-ok](https://raw.githubusercontent.com/DariuszPorowski/ghaction-actionlint/main/assets/images/demo-ok.png)
+![demo-ok](https://raw.githubusercontent.com/raven-actions/actionlint/main/assets/images/demo-ok.png)
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -33,7 +33,7 @@ Just place in your GitHub workflow steps:
 
 ```yaml
 - name: actionlint
-  uses: DariuszPorowski/ghaction-actionlint@v1
+  uses: raven-actions/actionlint@v1
 ```
 
 ### Customization
@@ -45,7 +45,7 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 ```yaml
 - name: actionlint
   id: actionlint  #optional, id required only when outputs are used in the workflow steps later
-  uses: DariuszPorowski/ghaction-actionlint@v1
+  uses: raven-actions/actionlint@v1
   with:
     matcher: false  # optional
     cache: false  # optional
@@ -93,8 +93,8 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 
 ## 👥 Contributing
 
-Contributions to the project are welcome! Please follow [Contributing Guide](https://github.com/DariuszPorowski/ghaction-actionlint/blob/main/.github/CONTRIBUTING.md).
+Contributions to the project are welcome! Please follow [Contributing Guide](https://github.com/raven-actions/actionlint/blob/main/.github/CONTRIBUTING.md).
 
 ## 📄 License
 
-This project is distributed under the terms of the [MIT](https://github.com/DariuszPorowski/ghaction-actionlint/blob/main/LICENSE) license.
+This project is distributed under the terms of the [MIT](https://github.com/raven-actions/actionlint/blob/main/LICENSE) license.

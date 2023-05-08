@@ -14,7 +14,7 @@ body:
       label: ✅ Checklist
       description: Mark with an ✔️ all the checkboxes that apply.
       options:
-        - label: I've searched the project's [`issues`](https://github.com/DariuszPorowski/ghaction-actionlint/issues?q=is%3Aissue) and did not find answer for my question.
+        - label: I've searched the project's [`issues`](https://github.com/raven-actions/actionlint/issues?q=is%3Aissue) and did not find answer for my question.
           required: true
   - type: textarea
     id: question
@@ -38,7 +38,7 @@ body:
     id: terms
     attributes:
       label: 📜 Code of Conduct
-      description: By submitting this issue, you agree to follow our [`Code of Conduct`](../CODE_OF_CONDUCT.md)
+      description: By submitting this issue, you agree to follow our [`Code of Conduct`](.github/CODE_OF_CONDUCT.md)
       options:
         - label: I agree to follow this project's Code of Conduct.
           required: true
