@@ -16,7 +16,7 @@ To contribute, please follow these steps:
 
 ## 🔰 Code of Conduct
 
-All contributors are expected to adhere to the project name code of conduct. Therefore, please review it before contributing [`Code of Conduct`](./CODE_OF_CONDUCT.md).
+All contributors are expected to adhere to the project name code of conduct. Therefore, please review it before contributing [`Code of Conduct`](https://github.com/raven-actions/actionlint/blob/main/.github/CODE_OF_CONDUCT.md).
 
 ## 📄 License
 
