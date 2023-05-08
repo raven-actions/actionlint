@@ -22,14 +22,24 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
+      - name: Get GitHub App Token
+        uses: wow-actions/use-app-token@v2
+        id: get-token
+        with:
+          app_id: ${{ secrets.ORG_BOT_APP_ID }}
+          private_key: ${{ secrets.ORG_BOT_PRIVATE_KEY }}
+          fallback: ${{ github.token }}
+
       - name: Update release to the latest
         id: gh-release
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
+          token: ${{ steps.get-token.outputs.BOT_TOKEN }}
 
       - name: Update the major tag to include the ${{ env.TAG_NAME }} changes
         id: update-major-tag
         uses: actions/publish-action@v0.2.2
         with:
           source-tag: ${{ env.TAG_NAME }}
+          token: ${{ steps.get-token.outputs.BOT_TOKEN }}
