@@ -3,7 +3,11 @@ name: CI
 
 on:
   pull_request:
+    branches:
+      - main
   push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       debug:
@@ -16,27 +20,47 @@ on:
 
 # Allow one concurrent
 concurrency:
-  group: ${{ format('{0}-{1}', github.event_name, github.ref) }}
+  group: ${{ format('{0}-{1}-{2}-{3}-{4}', github.workflow, github.event_name, github.ref, github.base_ref, github.head_ref) }}
   cancel-in-progress: true
 
 env:
   DEBUG: ${{ inputs.debug || secrets.ACTIONS_RUNNER_DEBUG || vars.ACTIONS_RUNNER_DEBUG || secrets.ACTIONS_STEP_DEBUG || vars.ACTIONS_STEP_DEBUG || false }}
 
 jobs:
-  lint:
-    name: Lint
-    if: ${{ github.event_name == 'pull_request' }}
+  validate:
+    name: Validate
+    if: ${{ github.event_name == 'pull_request' && !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
 
-      - name: Run pre-commit
-        run: |
-          pip install pre-commit
-          pre-commit run --all-files --verbose
+      - name: Detect changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            gh-workflows:
+              - '.github/workflows/**'
+            md:
+              - '**/*.md'
+
+      - name: actionlint
+        if: ${{ steps.changes.outputs.gh-workflows == 'true' }}
+        id: actionlint
+        uses: ./
+        with:
+          flags: "-ignore SC2086"
+          fail-on-error: false
+
+      - name: Markdown Links
+        if: ${{ steps.changes.outputs.md == 'true' }}
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          config-file: .github/linters/.markdown-link-check.json
 
   dog-food-matrix:
     name: Dog food (test runners)
@@ -59,7 +83,7 @@ jobs:
           flags: "-ignore SC2086"
           fail-on-error: false
 
-      - name: actionlint Summary
+      - name: actionlint Outputs
         if: ${{ always() }}
         run: |
           echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
@@ -107,7 +131,7 @@ jobs:
           flags: "-ignore SC2086"
           fail-on-error: false
 
-      - name: actionlint Summary
+      - name: actionlint Outputs
         if: ${{ steps.actionlint.outputs.exit-code != '0' }}
         run: |
           echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"

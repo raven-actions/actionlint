@@ -5,9 +5,9 @@
 [![GitHub - ci](https://img.shields.io/github/actions/workflow/status/DariuszPorowski/ghaction-actionlint/ci.yml?logo=github&label=CI&style=flat-square&branch=main&event=push)](https://github.com/DariuszPorowski/ghaction-actionlint/actions/workflows/ci.yml?query=branch%3Amain+event%3Apush)
 [![GitHub - license](https://img.shields.io/github/license/DariuszPorowski/ghaction-actionlint?style=flat-square)](https://github.com/DariuszPorowski/ghaction-actionlint/blob/main/LICENSE)
 
-This action allows you to quickly and easily run [actionlint](https://github.com/rhysd/actionlint) in your GitHub workflow using native Runner OS without 3rd party dependencies. It based on official action lint usage proposal from [Use actionlint on GitHub Actions](https://github.com/rhysd/actionlint/blob/main/docs/usage.md#use-actionlint-on-github-actions) together with [Problem Matchers](https://github.com/rhysd/actionlint/blob/main/docs/usage.md#problem-matchers).
+This [GitHub Action](https://github.com/features/actions) allows you to quickly and easily run [actionlint](https://github.com/rhysd/actionlint) in your GitHub workflow using native Runner OS without 3rd party dependencies. It is based on an official action lint usage proposal from [Use actionlint on GitHub Actions](https://github.com/rhysd/actionlint/blob/main/docs/usage.md#use-actionlint-on-github-actions) together with [Problem Matchers](https://github.com/rhysd/actionlint/blob/main/docs/usage.md#problem-matchers).
 
-- Action is platform-independent and tested on all the latest GitHub hosted runners (`ubuntu-latest`, `macos-latest`, `windows-latest`).
+- Action is platform-independent and tested on all the latest GitHub-hosted runners (`ubuntu-latest`, `macos-latest`, `windows-latest`).
 - Uses [GitHub cache](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows) for caching `actionlint` binaries for faster and more efficient workflow run.
   - 3rd party `actionlint` dependencies like `shellcheck` or `pyflakes` are not cached, but action installs them if not present on the Runner.
 
