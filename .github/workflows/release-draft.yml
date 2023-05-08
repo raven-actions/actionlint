@@ -11,7 +11,7 @@ on:
 
 jobs:
   draft-release:
-    if: ${{ github.repository_owner == 'DariuszPorowski' }}
+    if: ${{ github.repository_owner == 'raven-actions' }}
     name: Draft Release
     permissions:
       contents: write
