@@ -29,7 +29,7 @@ env:
 jobs:
   validate:
     name: Validate
-    if: ${{ github.event_name == 'pull_request' && !github.event.pull_request.draft }}
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && !github.event.pull_request.draft) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -62,51 +62,15 @@ jobs:
         with:
           config-file: .github/linters/.markdown-link-check.json
 
-  dog-food-matrix:
-    name: Dog food (test runners)
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: actionlint Action
-        id: actionlint
-        uses: ./
-        with:
-          flags: "-ignore SC2086"
-          fail-on-error: false
-
-      - name: actionlint Outputs
-        if: ${{ always() }}
-        run: |
-          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
-          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
-          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
-          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
-          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
-          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
-          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
-          # shellcheck disable=SC2242
-          exit ${{ steps.actionlint.outputs.exit-code }}
-
   dog-food:
     name: Dog food (test inputs)
-    needs:
-      - dog-food-matrix
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Dump Context
-        uses: DariuszPorowski/dump-context-action@v1
+        uses: raven-actions/dump-contexts@v1
         with:
           vars-context: ${{ toJson(vars) }}
           secrets-context: ${{ toJson(secrets) }}
@@ -141,3 +105,39 @@ jobs:
           echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
           echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
           echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+
+  dog-food-matrix:
+    name: Dog food (test runners)
+    needs:
+      - dog-food
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: actionlint Action
+        id: actionlint
+        uses: ./
+        with:
+          flags: "-ignore SC2086"
+          fail-on-error: false
+
+      - name: actionlint Outputs
+        if: ${{ always() }}
+        run: |
+          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
+          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
+          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
+          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
+          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
+          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
+          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+          # shellcheck disable=SC2242
+          exit ${{ steps.actionlint.outputs.exit-code }}
