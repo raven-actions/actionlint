@@ -23,5 +23,5 @@ Fixes: #
 
 <!-- Mark with an `x` all the checkboxes that apply (like `[x]`) -->
 
-- [ ] I've read the [`Code of Conduct`](./.github/CODE_OF_CONDUCT.md) document.
-- [ ] I've read the [`Contributing`](./.github/CONTRIBUTING.md) guide.
+- [ ] I've read the [`Code of Conduct`](https://github.com/raven-actions/actionlint/blob/main/.github/CODE_OF_CONDUCT.md)> document.
+- [ ] I've read the [`Contributing`](https://github.com/raven-actions/actionlint/blob/main/.github/CONTRIBUTING.md) guide.
