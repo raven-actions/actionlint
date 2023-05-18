@@ -6,7 +6,7 @@ I appreciate your interest in contributing to the project! This document outline
 
 To contribute, please follow these steps:
 
-1. Fork the project name repository on GitHub.
+1. Fork the project repository on GitHub.
 1. Create a new branch for your feature or bug fix.
 1. Make sure the `README.md` and any other relevant documentation are kept up-to-date.
 1. Make your changes and commit them with descriptive commit messages; check [Conventional Commits](https://www.conventionalcommits.org) as a suggestion.
