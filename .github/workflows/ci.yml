@@ -27,41 +27,6 @@ env:
   DEBUG: ${{ inputs.debug || secrets.ACTIONS_RUNNER_DEBUG || vars.ACTIONS_RUNNER_DEBUG || secrets.ACTIONS_STEP_DEBUG || vars.ACTIONS_STEP_DEBUG || false }}
 
 jobs:
-  validate:
-    name: Validate
-    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && !github.event.pull_request.draft) }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Detect changes
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            gh-workflows:
-              - '.github/workflows/**'
-            md:
-              - '**/*.md'
-
-      - name: actionlint
-        if: ${{ steps.changes.outputs.gh-workflows == 'true' }}
-        id: actionlint
-        uses: ./
-        with:
-          flags: "-ignore SC2086"
-          fail-on-error: false
-
-      - name: Markdown Links
-        if: ${{ steps.changes.outputs.md == 'true' }}
-        uses: gaurav-nelson/github-action-markdown-link-check@v1
-        with:
-          config-file: .github/linters/.markdown-link-check.json
-
   dog-food:
     name: Dog food (test inputs)
     runs-on: ubuntu-latest
@@ -83,7 +48,7 @@ jobs:
           version: "1.6.23"
           shellcheck: false
           pyflakes: false
-          files: "tests/*.yml, tests/*.yaml"
+          files: "tests/fixtures/*.yml, tests/fixtures/*.yaml"
           flags: "-ignore SC2086"
           fail-on-error: false
 
@@ -91,7 +56,7 @@ jobs:
         id: actionlint
         uses: ./
         with:
-          files: "tests/*.yml, tests/*.yaml"
+          files: "tests/fixtures/*.yml, tests/fixtures/*.yaml"
           flags: "-ignore SC2086"
           fail-on-error: false
 

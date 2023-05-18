@@ -1,0 +1,21 @@
+---
+name: Linter
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - ready_for_review
+      - synchronize
+      - reopened
+  push:
+    branches:
+      - main
+
+jobs:
+  linter:
+    name: Linter
+    uses: raven-actions/.workflows/.github/workflows/__linter.yml@main
+    secrets: inherit
