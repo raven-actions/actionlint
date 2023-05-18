@@ -318,7 +318,6 @@ runs:
             }
             const emojis = {
               arrowDown: '⬇️',
-              stop: '🛑',
               warning: '⚠️',
               error: '❌',
               check: '✅'
@@ -400,11 +399,11 @@ runs:
 
           if (exitCode !== 0) {
             if (INPUT_GROUP_RESULT === 'true') {
-              await core.group(niceHeader(`Results`, 'red', 'stop', true), async () => {
+              await core.group(niceHeader(`Results`, 'red', 'error', true), async () => {
                 core.info(`${stdout.trim()}`)
               })
             } else {
-              core.info(niceHeader(`Results`, 'red', 'stop'))
+              core.info(niceHeader(`Results`, 'red', 'error'))
               core.info(`${stdout.trim()}`)
             }
           }
