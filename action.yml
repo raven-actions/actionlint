@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
 name: actionlint
-description: Run actionlint in your GitHub workflow
+description: ✅ Run actionlint for validating your GitHub Actions workflow files.
 author: Dariusz Porowski
 branding:
   icon: check-circle # https://feathericons.com
@@ -198,7 +198,7 @@ runs:
     - name: Install dependencies
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       run: npm install @actions/tool-cache
-      shell: ${{ (runner.os == 'Windows' && 'pwsh')|| 'bash' }}
+      shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
     - uses: actions/github-script@v6
