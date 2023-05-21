@@ -15,17 +15,17 @@ This [GitHub Action](https://github.com/features/actions) allows you to quickly 
 
 ![demo-ok](https://raw.githubusercontent.com/raven-actions/actionlint/main/assets/images/demo-ok.png)
 
-## Table of Contents <!-- omit in toc -->
+## 📑 Table of Contents <!-- omit in toc -->
 
-- [🤔 Usage](#-usage)
+- [🛠️ Usage](#️-usage)
   - [Quick Start](#quick-start)
   - [Customization](#customization)
 - [📥 Inputs](#-inputs)
 - [📤 Outputs](#-outputs)
 - [👥 Contributing](#-contributing)
-- [📄 License](#-license)
+- [🛡️ License](#️-license)
 
-## 🤔 Usage
+## 🛠️ Usage
 
 ### Quick Start
 
@@ -96,6 +96,6 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 
 Contributions to the project are welcome! Please follow [Contributing Guide](https://github.com/raven-actions/actionlint/blob/main/.github/CONTRIBUTING.md).
 
-## 📄 License
+## 🛡️ License
 
 This project is distributed under the terms of the [MIT](https://github.com/raven-actions/actionlint/blob/main/LICENSE) license.

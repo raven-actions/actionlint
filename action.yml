@@ -3,7 +3,7 @@ name: actionlint
 description: ✅ Run actionlint for validating your GitHub Actions workflow files.
 author: Dariusz Porowski
 branding:
-  icon: check-circle # https://feathericons.com
+  icon: check-circle
   color: gray-dark
 
 inputs:
