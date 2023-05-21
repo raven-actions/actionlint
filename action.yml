@@ -1,9 +1,9 @@
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
 name: actionlint
-description: Run actionlint in your GitHub workflow
+description: ✅ Run actionlint for validating your GitHub Actions workflow files.
 author: Dariusz Porowski
 branding:
-  icon: check-circle # https://feathericons.com
+  icon: check-circle
   color: gray-dark
 
 inputs:
@@ -37,6 +37,10 @@ inputs:
     default: ${{ true }}
   fail-on-error:
     description: Fail on error
+    required: false
+    default: ${{ true }}
+  group-result:
+    description: Group result
     required: false
     default: ${{ true }}
   cache:
@@ -81,6 +85,7 @@ runs:
       uses: actions/github-script@v6
       id: environment
       with:
+        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_TOOL_NAME, INPUT_TOOL_SEMVER, INPUT_REPO_OWNER, INPUT_REPO_NAME, RUNNER_TEMP } = process.env
@@ -177,7 +182,6 @@ runs:
           core.setOutput('tool-executable', toolExecutable)
           core.setOutput('tool-executable-path', core.toPlatformPath(`${toolDirPath}/${toolExecutable}`))
       env:
-        GITHUB_TOKEN: ${{ inputs.token || env.GITHUB_TOKEN }}
         INPUT_TOOL_NAME: "actionlint"
         INPUT_REPO_OWNER: "rhysd"
         INPUT_REPO_NAME: "actionlint"
@@ -191,21 +195,16 @@ runs:
         path: ${{ steps.environment.outputs.tool-dir-path }}
         key: ${{ format('{0}-{1}-{2}-{3}', steps.environment.outputs.tool-name, steps.environment.outputs.tool-version-semver, runner.os, runner.arch) }}
 
-    - name: Install dependencies (Linux/macOS)
-      if: ${{ steps.tool-cache.outputs.cache-hit != 'true' && runner.os != 'Windows' }}
+    - name: Install dependencies
+      if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       run: npm install @actions/tool-cache
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-
-    - name: Install dependencies (Windows)
-      if: ${{ steps.tool-cache.outputs.cache-hit != 'true' && runner.os == 'Windows' }}
-      run: npm install @actions/tool-cache
-      shell: pwsh
+      shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
     - uses: actions/github-script@v6
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       with:
+        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
         script: |
           // dependencies
           const tc = require('@actions/tool-cache')
@@ -231,7 +230,6 @@ runs:
           const matcherTempPath = await tc.downloadTool(INPUT_MATCHER_DOWNLOAD_URL)
           await io.cp(matcherTempPath, INPUT_MATCHER_PATH, { force: true })
       env:
-        GITHUB_TOKEN: ${{ inputs.token || env.GITHUB_TOKEN }}
         INPUT_TOOL_NAME: ${{ steps.environment.outputs.tool-name }}
         INPUT_TOOL_DIR_PATH: ${{ steps.environment.outputs.tool-dir-path }}
         INPUT_TOOL_DOWNLOAD_URL: ${{ steps.environment.outputs.tool-download-url }}
@@ -243,6 +241,7 @@ runs:
       if: ${{ inputs.pyflakes == 'true' || inputs.shellcheck == 'true' }}
       id: tool-dependencies
       with:
+        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_PYFLAKES, INPUT_SHELLCHECK } = process.env
@@ -298,16 +297,16 @@ runs:
             }
           }
       env:
-        GITHUB_TOKEN: ${{ inputs.token || env.GITHUB_TOKEN }}
         INPUT_PYFLAKES: ${{ inputs.pyflakes }}
         INPUT_SHELLCHECK: ${{ inputs.shellcheck }}
 
     - uses: actions/github-script@v6
       id: tool-runner
       with:
+        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
-          const { INPUT_FILES, INPUT_FLAGS, INPUT_TOOL_NAME, INPUT_TOOL_DIR_PATH, INPUT_MATCHER, INPUT_MATCHER_PATH, INPUT_TOOL_EXECUTABLE, INPUT_JSON, INPUT_FAIL_ON_ERROR, INPUT_PYFLAKES, INPUT_SHELLCHECK, DEBUG } = process.env
+          const { INPUT_FILES, INPUT_FLAGS, INPUT_TOOL_NAME, INPUT_TOOL_DIR_PATH, INPUT_MATCHER, INPUT_MATCHER_PATH, INPUT_TOOL_EXECUTABLE, INPUT_JSON, INPUT_FAIL_ON_ERROR, INPUT_PYFLAKES, INPUT_SHELLCHECK, INPUT_GROUP_RESULT, DEBUG } = process.env
 
           // helpers
           function niceHeader(label, color, emoji, group = false) {
@@ -319,7 +318,6 @@ runs:
             }
             const emojis = {
               arrowDown: '⬇️',
-              stop: '🛑',
               warning: '⚠️',
               error: '❌',
               check: '✅'
@@ -400,9 +398,14 @@ runs:
           core.debug(`[${INPUT_TOOL_NAME}] ${exitMessage} (exit code: ${exitCode})`)
 
           if (exitCode !== 0) {
-            await core.group(niceHeader(`Results`, 'red', 'stop', true), async () => {
+            if (INPUT_GROUP_RESULT === 'true') {
+              await core.group(niceHeader(`Results`, 'red', 'error', true), async () => {
+                core.info(`${stdout.trim()}`)
+              })
+            } else {
+              core.info(niceHeader(`Results`, 'red', 'error'))
               core.info(`${stdout.trim()}`)
-            })
+            }
           }
 
           const outputVerbose = stderr.trim()
@@ -429,10 +432,10 @@ runs:
               }
               else {
                 core.warning(niceHeader(`${exitMessage} (found ${totalErrors} errors, linted ${totalFiles} files), exit code: ${exitCode}`, 'yellow', 'warning'))
-                process.exit(core.ExitCode.Success)}
+                process.exit(core.ExitCode.Success)
+              }
           }
       env:
-        GITHUB_TOKEN: ${{ inputs.token || env.GITHUB_TOKEN }}
         INPUT_TOOL_NAME: ${{ steps.environment.outputs.tool-name }}
         INPUT_TOOL_DIR_PATH: ${{ steps.environment.outputs.tool-dir-path }}
         INPUT_TOOL_EXECUTABLE: ${{ steps.environment.outputs.tool-executable }}
@@ -444,3 +447,4 @@ runs:
         INPUT_SHELLCHECK: ${{ inputs.shellcheck }}
         INPUT_FILES: ${{ inputs.files }}
         INPUT_FLAGS: ${{ inputs.flags }}
+        INPUT_GROUP_RESULT: ${{ inputs.group-result }}

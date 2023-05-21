@@ -59,6 +59,7 @@ jobs:
           files: "tests/fixtures/*.yml, tests/fixtures/*.yaml"
           flags: "-ignore SC2086"
           fail-on-error: false
+          group-result: false
 
       - name: actionlint Outputs
         if: ${{ steps.actionlint.outputs.exit-code != '0' }}
