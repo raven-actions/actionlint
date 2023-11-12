@@ -1,3 +1,4 @@
+---
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
 name: actionlint
 description: ✅ Run actionlint for validating your GitHub Actions workflow files.
