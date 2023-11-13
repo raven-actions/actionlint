@@ -1,17 +1,18 @@
+---
 default_install_hook_types:
   - pre-commit
 repos:
-  - repo: local
-    hooks:
-      - id: pre-commit-autoupdate
-        name: Run pre-commit autoupdate
-        entry: pre-commit autoupdate
-        language: system
-        pass_filenames: false
-        # files: .pre-commit-config.yaml
+  # - repo: local
+  #   hooks:
+  #     - id: pre-commit-autoupdate
+  #       name: Run pre-commit autoupdate
+  #       entry: pre-commit autoupdate
+  #       language: system
+  #       pass_filenames: false
+  #       files: .pre-commit-config.yaml
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-symlinks
       - id: trailing-whitespace
@@ -39,14 +40,9 @@ repos:
         exclude: package-lock.json
 
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.16.3
+    rev: v8.18.0
     hooks:
       - id: gitleaks
         args:
           - --config
           - ".github/linters/.gitleaks.toml"
-
-  # - repo: https://github.com/rhysd/actionlint
-  #   rev: v1.6.24
-  #   hooks:
-  #     - id: actionlint

@@ -1,4 +1,5 @@
-on:
+---
+on: # yamllint disable-line rule:truthy
   push:
     branch: test-only/foo-bar
     tags:
