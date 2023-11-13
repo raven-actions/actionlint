@@ -83,7 +83,7 @@ runs:
   using: composite
   steps:
     - name: Set tool environment
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       id: environment
       with:
         github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
@@ -202,7 +202,7 @@ runs:
       shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
-    - uses: actions/github-script@v6
+    - uses: actions/github-script@v7
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       with:
         github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
@@ -238,7 +238,7 @@ runs:
         INPUT_MATCHER_PATH: ${{ steps.environment.outputs.matcher-path }}
 
     - name: Install tool dependencies
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       if: ${{ inputs.pyflakes == 'true' || inputs.shellcheck == 'true' }}
       id: tool-dependencies
       with:
@@ -303,7 +303,7 @@ runs:
         INPUT_PYFLAKES: ${{ inputs.pyflakes }}
         INPUT_SHELLCHECK: ${{ inputs.shellcheck }}
 
-    - uses: actions/github-script@v6
+    - uses: actions/github-script@v7
       id: tool-runner
       with:
         github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
