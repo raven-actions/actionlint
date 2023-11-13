@@ -69,7 +69,7 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 ## 📥 Inputs
 
 |      Name       | Required |   Type   | Default value | Description                                                                                                                                                 |
-|:---------------:|:--------:|:--------:|:-------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :-------------: | :------: | :------: | :-----------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |    `version`    |  false   | `string` |   `latest`    | SemVer version of `actionlint`, recommended to keep default: latest                                                                                         |
 |    `matcher`    |  false   |  `bool`  |    `true`     | Use matcher for GitHub annotations                                                                                                                          |
 |     `files`     |  false   | `string` |   *not set*   | To lint different workflow files (default searching directory is `.github/workflows`), use comma-separated glob patterns, e.g., `tests/*.yml, tests/*.yaml` |
@@ -83,7 +83,7 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 ## 📤 Outputs
 
 |       Name       |   Type   | Description                                                                                                                    |
-|:----------------:|:--------:|:-------------------------------------------------------------------------------------------------------------------------------|
+| :--------------: | :------: | :----------------------------------------------------------------------------------------------------------------------------- |
 | `version-semver` | `string` | SemVer version of `actionlint`, recommended to keep default: latest                                                            |
 |  `version-tag`   | `string` | Use matcher for GitHub annotations                                                                                             |
 |   `exit-code`    |  `int`   | Exit status code based on [actionlint exit status](https://github.com/rhysd/actionlint/blob/main/docs/usage.md#exit-status)    |
