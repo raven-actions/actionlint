@@ -357,8 +357,10 @@ runs:
 
           // set user tool flags
           if(INPUT_FLAGS !== '') {
-            const userFlags = INPUT_FLAGS.split(' ').map(s => s.trim())
-            userFlags.forEach(flag => { toolFlags.push(flag) })
+            const userFlags = INPUT_FLAGS.match(/(?:[^\s"]+|"[^"]*")+/g)
+            userFlags.forEach(flag => {
+              toolFlags.push(flag.trim())
+            })
           }
 
           // set files
