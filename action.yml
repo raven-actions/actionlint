@@ -286,6 +286,8 @@ runs:
                   await exec.exec('brew', ['install',  'shellcheck'])
                   break;
                 case 'linux':
+                  core.exportVariable('DEBIAN_FRONTEND', 'noninteractive')
+                  await exec.exec('sudo apt-get update')
                   await exec.exec('sudo apt-get install shellcheck')
                   break;
                 case 'win32':
