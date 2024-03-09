@@ -68,19 +68,19 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 
 ## 📥 Inputs
 
-|      Name       | Required |   Type   |  Default value   | Description                                                                                                                                                 |
-| :-------------: | :------: | :------: | :--------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|    `version`    |  false   | `string` |     `latest`     | SemVer version of `actionlint`, recommended to keep default: `latest`                                                                                       |
-|    `matcher`    |  false   |  `bool`  |      `true`      | Use matcher for GitHub annotations.                                                                                                                         |
-|     `files`     |  false   | `string` |     *not set*    | To lint different workflow files (default searching directory is `.github/workflows`), use comma-separated glob patterns, e.g., `tests/*.yml, tests/*.yaml` |
-|     `flags`     |  false   | `string` |     *not set*    | Extra flags to use with `actionlint`                                                                                                                        |
-| `group-result`  |  false   |  `bool`  |      `true`      | Use the GitHub log grouping feature for failure actionlint results.                                                                                         |
-| `fail-on-error` |  false   |  `bool`  |      `true`      | Fail action on `actionlint` errors.                                                                                                                         |
-|  `shellcheck`   |  false   |  `bool`  |      `true`      | Use `shellcheck` with `actionlint` (and install if it does not exist)                                                                                       |
-|   `pyflakes`    |  false   |  `bool`  |      `true`      | Use `pyflakes` with `actionlint` (and install if it does not exist)                                                                                         |
-|     `cache`     |  false   |  `bool`  |      `true`      | Use GitHub cache for caching binaries for the next runs.                                                                                                    |
-|     `token`     |  false   | `string` |  `github.token`  | GitHub Token for API authentication.                                                                                                                        |
-|   `base-url`    |  false   | `string` | `github.api_url` | GitHub REST API URL to connect to a different GitHub instance. For example, `https://my.github-enterprise-server.com/api/v3`                                |
+|       Name       | Required |   Type   |  Default value   | Description                                                                                                                                                 |
+| :--------------: | :------: | :------: | :--------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    `version`     |  false   | `string` |     `latest`     | SemVer version of `actionlint`, recommended to keep default: `latest`                                                                                       |
+|    `matcher`     |  false   |  `bool`  |      `true`      | Use matcher for GitHub annotations.                                                                                                                         |
+|     `files`      |  false   | `string` |    _not set_     | To lint different workflow files (default searching directory is `.github/workflows`), use comma-separated glob patterns, e.g., `tests/*.yml, tests/*.yaml` |
+|     `flags`      |  false   | `string` |    _not set_     | Extra flags to use with `actionlint`                                                                                                                        |
+|  `group-result`  |  false   |  `bool`  |      `true`      | Use the GitHub log grouping feature for failure actionlint results.                                                                                         |
+| `fail-on-error`  |  false   |  `bool`  |      `true`      | Fail action on `actionlint` errors.                                                                                                                         |
+|   `shellcheck`   |  false   |  `bool`  |      `true`      | Use `shellcheck` with `actionlint` (and install if it does not exist)                                                                                       |
+|    `pyflakes`    |  false   |  `bool`  |      `true`      | Use `pyflakes` with `actionlint` (and install if it does not exist)                                                                                         |
+|     `cache`      |  false   |  `bool`  |      `true`      | Use GitHub cache for caching binaries for the next runs.                                                                                                    |
+|  `github-token`  |  false   | `string` |  `github.token`  | GitHub Token for API authentication.                                                                                                                        |
+| `github-api-url` |  false   | `string` | `github.api_url` | GitHub REST API URL to connect to a different GitHub instance. For example, `https://my.github-enterprise-server.com/api/v3`                                |
 
 ## 📤 Outputs
 
