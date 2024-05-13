@@ -80,7 +80,7 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 |    `pyflakes`    |  false   |  `bool`  |      `true`      | Use `pyflakes` with `actionlint` (and install if it does not exist)                                                                                         |
 |     `cache`      |  false   |  `bool`  |      `true`      | Use GitHub cache for caching binaries for the next runs.                                                                                                    |
 |  `github-token`  |  false   | `string` |  `github.token`  | GitHub Token for API authentication.                                                                                                                        |
-| `github-api-url` |  false   | `string` | `github.api_url` | GitHub REST API URL to connect to a different GitHub instance. For example, `https://my.github-enterprise-server.com/api/v3`                                |
+| `github-api-url-public` |  false   | `string` | `github.api_url` | Public GitHub REST API URL to connect to for dependencies download. For example, `https://api.github.com`. Required if you are running in the GHES.                                |
 
 ## 📤 Outputs
 
