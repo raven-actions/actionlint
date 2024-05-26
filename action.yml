@@ -96,8 +96,8 @@ runs:
       uses: actions/github-script@v7
       id: environment
       with:
-        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
-        base-url: "https://api.github.com"
+        # github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
+        base-url: ${{ inputs.github-api-url-public }}
         script: |
           // input envs
           const { INPUT_TOOL_NAME, INPUT_TOOL_SEMVER, INPUT_REPO_OWNER, INPUT_REPO_NAME, RUNNER_TEMP } = process.env
