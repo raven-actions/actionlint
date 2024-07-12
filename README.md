@@ -9,7 +9,7 @@ This [GitHub Action](https://github.com/features/actions) allows you to quickly 
 
 - Action is platform-independent and tested on all the latest GitHub-hosted runners (`ubuntu-latest`, `macos-latest`, `windows-latest`).
 - Uses [GitHub cache](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows) for caching `actionlint` binaries for faster and more efficient workflow run.
-  - 3rd party `actionlint` dependencies like `shellcheck` or `pyflakes` are not cached, but action installs them if not present on the Runner.
+  - 3rd party `actionlint` dependencies like `shellcheck` or `pyflakes` are not cached, but action installs them if not present on the GitHub Runner using [pipx](https://pipx.pypa.io/) (make sure your GitHub Runner has it).
 
 ![demo-error](https://raw.githubusercontent.com/raven-actions/actionlint/main/assets/images/demo-error.png)
 
@@ -33,7 +33,7 @@ Just place in your GitHub workflow steps:
 
 ```yaml
 - name: actionlint
-  uses: raven-actions/actionlint@v1
+  uses: raven-actions/actionlint@v2
 ```
 
 ### Customization
@@ -45,7 +45,7 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 ```yaml
 - name: actionlint
   id: actionlint  #optional, id required only when outputs are used in the workflow steps later
-  uses: raven-actions/actionlint@v1
+  uses: raven-actions/actionlint@v2
   with:
     matcher: false  # optional
     cache: false  # optional
@@ -68,17 +68,18 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 
 ## 📥 Inputs
 
-|      Name       | Required |   Type   | Default value | Description                                                                                                                                                 |
-| :-------------: | :------: | :------: | :-----------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|    `version`    |  false   | `string` |   `latest`    | SemVer version of `actionlint`, recommended to keep default: latest                                                                                         |
-|    `matcher`    |  false   |  `bool`  |    `true`     | Use matcher for GitHub annotations                                                                                                                          |
-|     `files`     |  false   | `string` |   *not set*   | To lint different workflow files (default searching directory is `.github/workflows`), use comma-separated glob patterns, e.g., `tests/*.yml, tests/*.yaml` |
-|     `flags`     |  false   | `string` |   *not set*   | Extra flags to use with `actionlint`                                                                                                                        |
-| `group-result`  |  false   |  `bool`  |    `true`     | Use the GitHub log grouping feature for failure actionlint results.                                                                                         |
-| `fail-on-error` |  false   |  `bool`  |    `true`     | Fail action on `actionlint` errors                                                                                                                          |
-|  `shellcheck`   |  false   |  `bool`  |    `true`     | Use `shellcheck` with `actionlint` (and install if it does not exist)                                                                                       |
-|   `pyflakes`    |  false   |  `bool`  |    `true`     | Use `pyflakes` with `actionlint` (and install if it does not exist)                                                                                         |
-|     `cache`     |  false   |  `bool`  |    `true`     | Use GitHub cache for caching binaries for the next runs                                                                                                     |
+|       Name       | Required |   Type   |  Default value   | Description                                                                                                                                                 |
+| :--------------: | :------: | :------: | :--------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    `version`     |  false   | `string` |     `latest`     | SemVer version of `actionlint`, recommended to keep default: `latest`                                                                                       |
+|    `matcher`     |  false   |  `bool`  |      `true`      | Use matcher for GitHub annotations.                                                                                                                         |
+|     `files`      |  false   | `string` |    _not set_     | To lint different workflow files (default searching directory is `.github/workflows`), use comma-separated glob patterns, e.g., `tests/*.yml, tests/*.yaml` |
+|     `flags`      |  false   | `string` |    _not set_     | Extra flags to use with `actionlint`                                                                                                                        |
+|  `group-result`  |  false   |  `bool`  |      `true`      | Use the GitHub log grouping feature for failure actionlint results.                                                                                         |
+| `fail-on-error`  |  false   |  `bool`  |      `true`      | Fail action on `actionlint` errors.                                                                                                                         |
+|   `shellcheck`   |  false   |  `bool`  |      `true`      | Use `shellcheck` with `actionlint` (and install if it does not exist)                                                                                       |
+|    `pyflakes`    |  false   |  `bool`  |      `true`      | Use `pyflakes` with `actionlint` (and install if it does not exist)                                                                                         |
+|     `cache`      |  false   |  `bool`  |      `true`      | Use GitHub cache for caching binaries for the next runs.                                                                                                    |
+|  `github-token`  |  false   | `string` |  `github.token`  | GitHub Token for API authentication.                                                                                                                        |
 
 ## 📤 Outputs
 

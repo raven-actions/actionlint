@@ -1,5 +1,6 @@
----
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+---
 name: actionlint
 description: ✅ Run actionlint for validating your GitHub Actions workflow files.
 author: Dariusz Porowski
@@ -56,6 +57,11 @@ inputs:
     description: GitHub Token
     required: false
     default: ${{ github.token }}
+    deprecationMessage: Use `github-token` input instead
+  github-token:
+    description: GitHub Token
+    required: false
+    default: ${{ github.token }}
 outputs:
   version-semver:
     description: SemVer version
@@ -86,7 +92,7 @@ runs:
       uses: actions/github-script@v7
       id: environment
       with:
-        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_TOOL_NAME, INPUT_TOOL_SEMVER, INPUT_REPO_OWNER, INPUT_REPO_NAME, RUNNER_TEMP } = process.env
@@ -202,10 +208,11 @@ runs:
       shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
-    - uses: actions/github-script@v7
+    - name: Download tool
+      uses: actions/github-script@v7
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       with:
-        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // dependencies
           const tc = require('@actions/tool-cache')
@@ -242,7 +249,7 @@ runs:
       if: ${{ inputs.pyflakes == 'true' || inputs.shellcheck == 'true' }}
       id: tool-dependencies
       with:
-        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_PYFLAKES, INPUT_SHELLCHECK } = process.env
@@ -268,7 +275,7 @@ runs:
             core.debug(`${pyflakesBinary} exists: ${pyflakesExists}`)
 
             if (pyflakesExists === false) {
-              await exec.exec('python3', ['-m', 'pip',  'install',  '--upgrade',  'pyflakes'])
+              await exec.exec('pipx', ['install', 'pyflakes'])
             }
           }
 
@@ -303,10 +310,11 @@ runs:
         INPUT_PYFLAKES: ${{ inputs.pyflakes }}
         INPUT_SHELLCHECK: ${{ inputs.shellcheck }}
 
-    - uses: actions/github-script@v7
+    - name: Run tool
+      uses: actions/github-script@v7
       id: tool-runner
       with:
-        github-token: ${{ inputs.token || env.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_FILES, INPUT_FLAGS, INPUT_TOOL_NAME, INPUT_TOOL_DIR_PATH, INPUT_MATCHER, INPUT_MATCHER_PATH, INPUT_TOOL_EXECUTABLE, INPUT_JSON, INPUT_FAIL_ON_ERROR, INPUT_PYFLAKES, INPUT_SHELLCHECK, INPUT_GROUP_RESULT, DEBUG } = process.env
