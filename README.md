@@ -9,7 +9,7 @@ This [GitHub Action](https://github.com/features/actions) allows you to quickly 
 
 - Action is platform-independent and tested on all the latest GitHub-hosted runners (`ubuntu-latest`, `macos-latest`, `windows-latest`).
 - Uses [GitHub cache](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows) for caching `actionlint` binaries for faster and more efficient workflow run.
-  - 3rd party `actionlint` dependencies like `shellcheck` or `pyflakes` are not cached, but action installs them if not present on the Runner.
+  - 3rd party `actionlint` dependencies like `shellcheck` or `pyflakes` are not cached, but action installs them if not present on the GitHub Runner using [pipx](https://pipx.pypa.io/) (make sure your GitHub Runner has it).
 
 ![demo-error](https://raw.githubusercontent.com/raven-actions/actionlint/main/assets/images/demo-error.png)
 
@@ -33,7 +33,7 @@ Just place in your GitHub workflow steps:
 
 ```yaml
 - name: actionlint
-  uses: raven-actions/actionlint@v1
+  uses: raven-actions/actionlint@v2
 ```
 
 ### Customization
@@ -45,7 +45,7 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 ```yaml
 - name: actionlint
   id: actionlint  #optional, id required only when outputs are used in the workflow steps later
-  uses: raven-actions/actionlint@v1
+  uses: raven-actions/actionlint@v2
   with:
     matcher: false  # optional
     cache: false  # optional
