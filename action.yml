@@ -84,6 +84,9 @@ outputs:
   cache-hit:
     description: Cache hit
     value: ${{ steps.tool-cache.outputs.cache-hit || false }}
+  stdout:
+    description: Tool output
+    value: ${{ steps.tool-runner.outputs.stdout }}
 
 runs:
   using: composite
@@ -408,6 +411,7 @@ runs:
           }
           core.setOutput('exit-code', exitCode)
           core.setOutput('exit-message', exitMessage)
+          core.setOutput('stdout', `${stdout.trim()}`)
           core.debug(`[${INPUT_TOOL_NAME}] ${exitMessage} (exit code: ${exitCode})`)
 
           if (exitCode !== 0) {
