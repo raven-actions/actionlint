@@ -357,10 +357,10 @@ runs:
             toolFlags.push('-debug')
           }
           if(INPUT_PYFLAKES === 'false') {
-            toolFlags.push('-pyflakes', '\"\"')
+            toolFlags.push('-pyflakes', '')
           }
           if(INPUT_SHELLCHECK === 'false') {
-            toolFlags.push('-shellcheck', '\"\"')
+            toolFlags.push('-shellcheck', '')
           }
 
           // set user tool flags
