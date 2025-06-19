@@ -50,11 +50,12 @@ ENABLE_LINTERS:
   # TypeScript
   - TYPESCRIPT_PRETTIER
 EXCLUDED_DIRECTORIES:
-  - ".git"
-  - "node_modules"
-  - ".venv"
-  - ".terraform"
-  - "dist"
+  - .git
+  - node_modules
+  - .venv
+  - .terraform
+  - dist
+  - megalinter-reports
 
 ACTION_ACTIONLINT_CONFIG_FILE: .github/linters/actionlint.yml
 MARKDOWN_MARKDOWNLINT_CONFIG_FILE: .github/linters/.markdownlint.yml
