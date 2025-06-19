@@ -13,4 +13,5 @@ ignore:
   - .git/
   - node_modules/
   - dist/
+  - megalinter-reports/
   - pnpm-lock.yaml
