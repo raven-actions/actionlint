@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://json.schemastore.org/prettierrc.json
+# docs: https://prettier.io/docs/configuration
+---
+printWidth: 120
+tabWidth: 2
+useTabs: false
+semi: false
+singleQuote: true
+quoteProps: as-needed
+jsxSingleQuote: true
+trailingComma: none
+bracketSpacing: true
+bracketSameLine: true
+arrowParens: always
+proseWrap: always
+endOfLine: lf
+embeddedLanguageFormatting: auto
+htmlWhitespaceSensitivity: css
+vueIndentScriptAndStyle: true
