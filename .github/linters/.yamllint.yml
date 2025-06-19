@@ -1,10 +1,16 @@
 # yaml-language-server: $schema=https://json.schemastore.org/yamllint.json
-# https://yamllint.readthedocs.io/en/stable/configuration.html#extending-the-default-configuration
+# docs: https://yamllint.readthedocs.io/en/stable/configuration.html#extending-the-default-configuration
 ---
-extends: default
+extends: relaxed
 
 locale: en_US.UTF-8
-
 rules:
+  document-start:
+    level: warning
   line-length: disable
-  comments: disable
+
+ignore:
+  - .git/
+  - node_modules/
+  - dist/
+  - pnpm-lock.yaml

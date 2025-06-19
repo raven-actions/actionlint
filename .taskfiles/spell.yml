@@ -1,0 +1,65 @@
+#  yaml-language-server: $schema=https://taskfile.dev/schema.json
+# docs: https://taskfile.dev
+---
+version: "3"
+
+includes:
+  internal: internal.yml
+
+tasks:
+  # * Install CSpell
+  install:cspell:
+    desc: Install CSpell
+    cmds:
+      - task: internal:install:npm
+        vars:
+          APP: cspell
+
+  # * Install CodeSpell
+  install:codespell:
+    desc: Install CodeSpell
+    cmds:
+      - task: internal:install:pipx
+        vars:
+          APP: codespell
+
+  # * Install Lychee
+  install:lychee:
+    desc: Install Lychee
+    cmds:
+      - task: internal:install:winget
+        vars:
+          APP: "lycheeverse.lychee"
+      - task: internal:install:brew
+        vars:
+          APP: lychee
+      - cmd: |
+          arch=$(uname -m)
+          download_url=$(curl --location --silent "https://api.github.com/repos/lycheeverse/lychee/releases/latest" | grep 'browser_download_url.*lychee-'"${arch}"'.*gnu.*tar.gz' | grep -o 'https://[^"]*')
+          curl --location -o /tmp/lychee.tar.gz "${download_url}"
+          tar -xf /tmp/lychee.tar.gz --directory /tmp
+          rm /tmp/lychee.tar.gz
+          sudo mv /tmp/lychee /usr/local/bin/lychee
+        platforms: [linux]
+
+  # * Tools
+  tools:
+    desc: Install Spell tools
+    cmds:
+      - task: install:cspell
+      - task: install:codespell
+      - task: install:lychee
+
+  # * Lint
+  lint:
+    desc: Lint Spell files
+    cmds:
+      - cmd: |
+          $(pipx environment --value PIPX_BIN_DIR)/codespell --summary --write-changes --config ".github/linters/.codespellrc"
+        platforms: [linux, darwin]
+      - cmd: |
+          codespell --summary --write-changes --config ".github/linters/.codespellrc"
+        platforms: [windows]
+      - cspell --config "./.github/linters/.cspell.yml" "./**/*.md"
+      - lychee --config "./.github/linters/.lychee.toml" --format markdown .
+    dir: "{{.ROOT_DIR}}"

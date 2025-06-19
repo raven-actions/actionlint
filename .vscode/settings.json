@@ -4,30 +4,117 @@
   "git.autofetch": true,
   "git.fetchOnPull": true,
   "git.pruneOnFetch": true,
-  "git.branchProtection": ["main", "master"],
+  "git.pullBeforeCheckout": true,
+  "git.branchProtection": [
+    "main"
+  ],
+  "git.mergeEditor": true,
+  "git.enableSmartCommit": true,
+  "git.replaceTagsWhenPull": true,
+  // github
+  "github.branchProtection": true,
+  "githubPullRequests.showPullRequestNumberInTree": true,
   // files
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.associations": {
-    "CODEOWNERS": "ignore"
+    "CODEOWNERS": "ignore",
+    "**/.github/workflows/*.y*ml": "yaml",
+    "*.env*": "properties",
+    ".lycheeignore": "ignore",
+    "tsconfig.json": "jsonc",
+    "*.tsconfig.json": "jsonc",
+    "tsconfig.*.json": "jsonc",
+    "project.json": "jsonc",
+    "*.tsbuildinfo": "jsonc"
   },
   // editor
+  "editor.inlineSuggest.enabled": true,
+  "editor.detectIndentation": true,
   "editor.formatOnSave": true,
   // markdown
   "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true
   },
+  "markdownlint.configFile": "./.github/linters/.markdownlint.yml",
   "markdown.extension.toc.levels": "2..6",
-  "markdown.extension.toc.unorderedList.marker": "-",
   "markdown.extension.toc.updateOnSave": true,
+  "markdown.extension.tableFormatter.normalizeIndentation": true,
+  "markdown.extension.tableFormatter.delimiterRowNoPadding": true,
+  "markdown.extension.toc.slugifyMode": "github",
+  "markdown.extension.toc.unorderedList.marker": "-",
   "markdown.extension.orderedList.marker": "one",
   "markdown.extension.print.absoluteImgPath": true,
-  "markdown.extension.toc.slugifyMode": "github",
+  // yaml
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
   "yaml.format.singleQuote": false,
+  "yaml.schemaStore.enable": true,
+  // json
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "devcontainer.json"
+      ],
+      "url": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
+    }
+  ],
+  // others
+  "dotenv.enableAutocloaking": false,
+  "eslint.format.enable": true,
+  // lint
+  "cSpell.import": [
+    "./.github/linters/.cspell.yml"
+  ],
+  "prettier.configPath": "./.github/linters/.prettierrc.yml",
   "linter.linters": {
     "yamllint": {
-      "configFiles": [".github/linters/.yamllint.yml"]
+      "configFiles": [
+        "./.github/linters/.yamllint.yml"
+      ]
+    },
+    "markdownlint": {
+      "configFiles": [
+        "./.github/linters/.markdownlint.yml"
+      ]
+    },
+    "shellcheck": {
+      "configFiles": [
+        "./.github/linters/.shellcheckrc"
+      ],
+      "command": [
+        "shellcheck",
+        "--format",
+        "json",
+        "--enable",
+        "all",
+        "--rcfile",
+        "$config",
+        "-"
+      ]
     }
-  }
+  },
+  "shellcheck.customArgs": [
+    "--rcfile",
+    "./.github/linters/.shellcheckrc"
+  ],
+  "shellcheck.useWorkspaceRootAsCwd": true,
+  // copilot
+  "chat.mcp.discovery.enabled": true,
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use the Conventional Commits specification to create commit message with scope to keep consistent commit history. Do not use file extension. Must be less than 100 characters."
+    }
+  ],
+  // misc
+  "sarif-viewer.connectToGithubCodeScanning": "on"
 }

@@ -3,7 +3,7 @@
 ## 🎯 Supported Versions
 
 | Version | Supported |
-| :-----: | :-------: |
+|:-------:|:---------:|
 |  1.x.x  |     ✅     |
 
 ## 🚨 Reporting a Vulnerability
@@ -24,9 +24,9 @@ We strive to address security issues as quickly as possible. Our response time d
 
 We will disclose security vulnerabilities in our project as soon as we have verified them and developed a fix or a workaround. We will notify users of the vulnerability via our GitHub repository and other appropriate channels.
 
-## 📜 Code of Conduct
+## 🔰 Code of Conduct
 
-All participants in our project are expected to adhere to our [`Code of Conduct`](https://github.com/raven-actions/actionlint/blob/main/.github/CODE_OF_CONDUCT.md). Furthermore, we expect everyone to treat each other respectfully and contribute to a positive and inclusive community.
+All participants in our project are expected to adhere to our [`Code of Conduct`](https://github.com/raven-actions/.workflows/blob/main/.github/CODE_OF_CONDUCT.md). Furthermore, we expect everyone to treat each other respectfully and contribute to a positive and inclusive community.
 
 ## ✉️ Contact
 

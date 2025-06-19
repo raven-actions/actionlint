@@ -1,17 +1,18 @@
-# Set default behavior to automatically normalize line endings.
-* text=auto eol=lf
+# Force the following filetypes to have unix eols, so Windows does not break them
+* text eol=lf
 
-# Force batch scripts to always use CRLF line endings so that if a repo is accessed
-# in Windows via a file share from Linux, the scripts will work.
+# Declare files that will always have CRLF line endings on checkout.
 *.{cmd,[cC][mM][dD]} text eol=crlf
 *.{bat,[bB][aA][tT]} text eol=crlf
 
-# Force bash scripts to always use LF line endings so that if a repo is accessed
-# in Unix via a file share from Windows, the scripts will work.
-*.sh text eol=lf
-
 # Common files config
-*.jpg -text
-*.gif -text
-*.png -text
-*.pdf -text
+*.pdf binary
+*.gif binary
+*.tif binary
+*.ico binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.vsdx binary
+
+dist/** -diff linguist-generated=true

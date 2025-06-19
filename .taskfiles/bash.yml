@@ -1,0 +1,73 @@
+#  yaml-language-server: $schema=https://taskfile.dev/schema.json
+# docs: https://taskfile.dev
+---
+version: "3"
+
+includes:
+  internal: internal.yml
+
+tasks:
+  # * Install shellcheck
+  install:shellcheck:
+    desc: Install shellcheck
+    cmds:
+      - for: [koalaman.shellcheck]
+        task: internal:install:winget
+        vars:
+          APP: "{{.ITEM}}"
+        platforms: [windows]
+      - for: [shellcheck]
+        task: internal:install:brew
+        vars:
+          APP: "{{.ITEM}}"
+        platforms: [darwin]
+      - cmd: |
+          latest_version=$(curl --location --silent "https://api.github.com/repos/koalaman/shellcheck/releases/latest" | jq -r .tag_name)
+          download_url=$(curl --location --silent "https://api.github.com/repos/koalaman/shellcheck/releases/latest" | grep 'browser_download_url.*linux.x86_64.*tar.xz' | grep -o 'https://[^"]*')
+          curl --location -o /tmp/shellcheck.tar.xz "${download_url}"
+          tar -xf /tmp/shellcheck.tar.xz --directory /tmp
+          rm /tmp/shellcheck.tar.xz
+          sudo install "/tmp/shellcheck-${latest_version}/shellcheck" /usr/local/bin/shellcheck && rm -rf "/tmp/shellcheck-${latest_version}"
+        platforms: [linux]
+
+  # * Install shfmt
+  install:shfmt:
+    desc: Install shfmt
+    cmds:
+      - for: [mvdan.shfmt]
+        task: internal:install:winget
+        vars:
+          APP: "{{.ITEM}}"
+        platforms: [windows]
+      - cmd: |
+          curl -L "$(curl -s https://api.github.com/repos/mvdan/sh/releases/latest | grep -o -E "https://.+?_linux_amd64")" > /tmp/shfmt
+          sudo install /tmp/shfmt /usr/local/bin/shfmt && rm /tmp/shfmt
+        platforms: [linux]
+      - cmd: |
+          curl -L "$(curl -s https://api.github.com/repos/mvdan/sh/releases/latest | grep -o -E "https://.+?_darwin_arm64")" > /tmp/shfmt
+          sudo install /tmp/shfmt /usr/local/bin/shfmt && rm /tmp/shfmt
+        platforms: [darwin]
+
+  # * Tools
+  tools:
+    desc: Install Bash tools
+    cmds:
+      - task: install:shellcheck
+      - task: install:shfmt
+
+  # * Lint
+  lint:
+    desc: Lint Bash files
+    vars:
+      ITEMS:
+        sh: |
+          {{if eq OS "windows"}}
+            {{.PWSH}} 'Get-ChildItem -Path . -Filter "*.sh" -Recurse | Where-Object { $_.FullName -notmatch "\\(.git|.venv)\\" -and $_.FullName -notlike "*\node_modules\*" } | ForEach-Object { $_.FullName | Resolve-Path -Relative }'
+          {{else}}
+            find . -type f -name "*.sh" -not -path "./.git/*" -not -path "*/node_modules/*" -not -path "*/.venv/*"
+          {{end}}
+    cmds:
+      - shfmt --write --indent 2 --case-indent --binary-next-line --list .
+      - for: { var: ITEMS }
+        cmd: shellcheck --rcfile ".github/linters/.shellcheckrc" "{{osClean .ITEM}}"
+    dir: "{{.ROOT_DIR}}"

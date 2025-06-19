@@ -1,7 +1,8 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 ---
 name: Linter
 
-on: # yamllint disable-line rule:truthy
+on:
   pull_request:
     branches:
       - main
@@ -10,16 +11,17 @@ on: # yamllint disable-line rule:truthy
       - ready_for_review
       - synchronize
       - reopened
+  merge_group:
   push:
     branches:
       - main
 
 permissions:
-  contents: read
-  pull-requests: read
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   linter:
-    name: Linter
     uses: raven-actions/.workflows/.github/workflows/__linter.yml@main
     secrets: inherit
