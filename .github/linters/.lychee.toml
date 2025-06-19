@@ -54,7 +54,32 @@ retry_wait_time = 2
 # accept = "200..=204, 429"
 # accept = ["200", "429"]
 # accept = "200, 429"
-accept = ["200", "206", "301", "429"]
+accept = [
+  # Informational
+  100,
+  101,
+  102,
+  103,
+  # Success
+  200,
+  201,
+  202,
+  203,
+  204,
+  205,
+  206,
+  207,
+  208,
+  226,
+  # Redirection
+  300,
+  301,
+  302,
+  303,
+  304,
+  307,
+  308,
+]
 
 # Proceed for server connections considered insecure (invalid TLS).
 insecure = false
@@ -72,7 +97,14 @@ method = "get"
 
 # Custom request headers
 # header = { "accept" = "text/html", "x-custom-header" = "value" }
-headers = ['Accept-Encoding: deflate, compress, gzip, br, zstd']
+headers = [
+  # Avoid being blocked by GitHub's anti-bot measures
+  "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  # Some sites require this header
+  "Accept-Language=en-US,en;q=0.5",
+  # Disable compression to avoid issues with some servers
+  "Accept-Encoding=identity",
+]
 
 # Remap URI matching pattern to different URI.
 # remap = ["https://example.com http://example.invalid"]
@@ -105,7 +137,17 @@ exclude = [
 ]
 
 # Exclude these filesystem paths from getting checked.
-exclude_path = [".github/configs/release-drafter.yml"]
+exclude_path = [
+  ".github/configs/release-drafter.yml",
+  "*/node_modules/*",
+  "*/.git/*",
+  "*/.venv/*",
+  "*/venv/*",
+  "*/__pycache__/*",
+  "*/target/*",
+  "*/build/*",
+  "*/dist/*",
+]
 
 # URLs to check (supports regex). Has preference over all excludes.
 include = ['gist\.github\.com.*']
