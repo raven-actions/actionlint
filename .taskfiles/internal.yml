@@ -1,0 +1,90 @@
+#  yaml-language-server: $schema=https://taskfile.dev/schema.json
+# docs: https://taskfile.dev
+---
+version: "3"
+
+vars:
+  PWSH: pwsh -NonInteractive -NoProfile -NoLogo -Command
+  PWSH_SCRIPT: pwsh -NonInteractive -NoProfile -NoLogo -File
+
+tasks:
+  command:
+    desc: Check if command exists
+    silent: true
+    preconditions:
+      - sh: |
+          {{empty .CLI_ARGS | not}}
+        msg: No command provided. Please provide a command to check.
+    cmds:
+      - cmd: command -v "{{.CLI_ARGS}}"
+        platforms: [linux, darwin]
+      - cmd: |
+          {{.PWSH}} 'Get-Command "{{.CLI_ARGS}}"'
+        platforms: [windows]
+
+  install:go:
+    desc: go install
+    internal: true
+    preconditions:
+      - sh: task internal:command -- go
+        msg: "go is not installed. Please install go: https://go.dev/doc/install"
+    cmds:
+      - go install {{.APP}}
+
+  install:winget:
+    desc: winget install
+    internal: true
+    preconditions:
+      - sh: task internal:command -- winget
+        msg: "winget is not installed. Please install winget: https://learn.microsoft.com/windows/package-manager/winget/"
+    cmds:
+      - winget install {{.APP}} --accept-source-agreements --accept-package-agreements
+    ignore_error: true
+    platforms: [windows]
+
+  install:brew:
+    desc: brew install
+    internal: true
+    preconditions:
+      - sh: task internal:command -- brew
+        msg: "brew is not installed. Please install brew."
+    cmds:
+      - brew install {{.APP}}
+    platforms: [darwin]
+
+  install:brew:tap:
+    desc: brew tap
+    internal: true
+    preconditions:
+      - sh: task internal:command -- brew
+        msg: "brew is not installed. Please install brew."
+    cmds:
+      - brew tap {{.APP}}
+    platforms: [darwin]
+
+  install:pipx:
+    desc: pipx install
+    internal: true
+    preconditions:
+      - sh: task internal:command -- pipx
+        msg: "pipx is not installed. Please install pipx: https://pipx.pypa.io/"
+    cmds:
+      - pipx install --include-deps {{.APP}}
+
+  install:npm:
+    desc: npm install
+    internal: true
+    preconditions:
+      - sh: task internal:command -- npm
+        msg: "npm is not installed. Please install npm: https://docs.npmjs.com/cli/commands/npm"
+    cmds:
+      - npm install --global {{.APP}}
+
+  install:uv:
+    desc: uv install
+    internal: true
+    preconditions:
+      - sh: task internal:command -- uv
+        msg: "uv is not installed. Please install uv: https://docs.astral.sh/uv/getting-started/installation/"
+    cmds:
+      - uv tool install --force {{.APP}}
