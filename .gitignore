@@ -156,3 +156,4 @@ __tests__/runner/*
 *_report.md
 *_report.json
 *_report.html
+megalinter-reports/

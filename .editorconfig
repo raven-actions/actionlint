@@ -31,3 +31,6 @@ ignore = true
 
 [**/dist/**]
 ignore = true
+
+[**/megalinter-reports/**]
+ignore = true

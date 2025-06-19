@@ -147,6 +147,7 @@ exclude_path = [
   "*/target/*",
   "*/build/*",
   "*/dist/*",
+  "*/megalinter-reports/*",
 ]
 
 # URLs to check (supports regex). Has preference over all excludes.
