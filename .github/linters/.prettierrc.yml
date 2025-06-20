@@ -1,7 +1,7 @@
-# yaml-language-server: $schema=https://json.schemastore.org/prettierrc.json
+# yaml-language-server: $schema=https://www.schemastore.org/prettierrc.json
 # docs: https://prettier.io/docs/configuration
 ---
-printWidth: 120
+printWidth: 160
 tabWidth: 2
 useTabs: false
 semi: false
@@ -10,7 +10,7 @@ quoteProps: as-needed
 jsxSingleQuote: true
 trailingComma: none
 bracketSpacing: true
-bracketSameLine: true
+bracketSameLine: false
 arrowParens: always
 proseWrap: always
 endOfLine: lf
