@@ -26,5 +26,4 @@ tasks:
     desc: Lint YAML files
     cmds:
       - yamllint -c "./.github/linters/.yamllint.yml" .
-      - pnpm dlx prettier --config ".github/linters/.prettierrc.yml" --write "**/*.{ts,mts,cts,tsx,js,mjs,cjs,jsx}"
     dir: "{{.ROOT_DIR}}"
