@@ -13,7 +13,7 @@ tasks:
     cmds:
       - task: internal:install:winget
         vars:
-          APP: "Gitleaks.Gitleaks"
+          APP: Gitleaks.Gitleaks
       - task: internal:install:brew
         vars:
           APP: gitleaks
@@ -40,7 +40,7 @@ tasks:
     cmds:
       - task: internal:install:winget
         vars:
-          APP: "AquaSecurity.Trivy"
+          APP: AquaSecurity.Trivy
       - task: internal:install:brew
         vars:
           APP: trivy
