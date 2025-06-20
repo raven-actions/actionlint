@@ -9,6 +9,8 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig*.json, .npmrc, .nvmrc, .pnpmfile.*js",
+    "README.md": "CODE_OF_CONDUCT.md, CHANGELOG.md, SECURITY.md, CONTRIBUTING.md, LICENSE",
+    "go.mod": "go.sum, go.work",
   },
   // * Git
   "git.autorefresh": true,
@@ -81,6 +83,36 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "eslint.format.enable": true,
+  // * Go
+  "[go][go.mod]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always"
+    }
+  },
+  "go.useLanguageServer": true,
+  "go.toolsManagement.autoUpdate": true,
+  "go.vetOnSave": "package",
+  "go.diagnostic.vulncheck": "Imports",
+  "go.testTimeout": "5m",
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": [
+    "--fast-only"
+  ],
+  "go.alternateTools": {
+    "customFormatter": "golangci-lint"
+  },
+  "go.formatTool": "custom",
+  "go.formatFlags": [
+    "fmt",
+    "--stdin",
+  ],
+  "gopls": {
+    "formatting.gofumpt": true,
+    "ui.semanticTokens": true,
+    "ui.completion.usePlaceholders": true
+  },
   // * Lint
   "cSpell.import": [
     "./.github/linters/.cspell.yml"
