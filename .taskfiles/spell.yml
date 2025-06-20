@@ -29,7 +29,7 @@ tasks:
     cmds:
       - task: internal:install:winget
         vars:
-          APP: "lycheeverse.lychee"
+          APP: lycheeverse.lychee
       - task: internal:install:brew
         vars:
           APP: lychee

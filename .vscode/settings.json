@@ -1,5 +1,16 @@
 {
-  // git
+  "search.exclude": {
+    "pnpm-lock.yaml": true,
+    "package-lock.json": true,
+    "yarn.lock": true,
+  },
+  "npm.packageManager": "pnpm",
+  // * Explorer
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig*.json, .npmrc, .nvmrc, .pnpmfile.*js",
+  },
+  // * Git
   "git.autorefresh": true,
   "git.autofetch": true,
   "git.fetchOnPull": true,
@@ -11,10 +22,10 @@
   "git.mergeEditor": true,
   "git.enableSmartCommit": true,
   "git.replaceTagsWhenPull": true,
-  // github
+  // * GitHub
   "github.branchProtection": true,
   "githubPullRequests.showPullRequestNumberInTree": true,
-  // files
+  // * Files
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.associations": {
@@ -28,11 +39,11 @@
     "project.json": "jsonc",
     "*.tsbuildinfo": "jsonc"
   },
-  // editor
+  // * Editor
   "editor.inlineSuggest.enabled": true,
   "editor.detectIndentation": true,
   "editor.formatOnSave": true,
-  // markdown
+  // * Markdown
   "[markdown]": {
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
     "editor.formatOnSave": true,
@@ -47,17 +58,14 @@
   "markdown.extension.toc.unorderedList.marker": "-",
   "markdown.extension.orderedList.marker": "one",
   "markdown.extension.print.absoluteImgPath": true,
-  // yaml
+  // *YAML
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
   "yaml.format.singleQuote": false,
   "yaml.schemaStore.enable": true,
-  // json
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-  "[jsonc]": {
+  // * JSON
+  "[json][jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "json.schemas": [
@@ -68,10 +76,12 @@
       "url": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
     }
   ],
-  // others
-  "dotenv.enableAutocloaking": false,
+  // * JavaScript / TypeScript
+  "[javascript][javascriptreact][typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "eslint.format.enable": true,
-  // lint
+  // * Lint
   "cSpell.import": [
     "./.github/linters/.cspell.yml"
   ],
@@ -108,13 +118,14 @@
     "./.github/linters/.shellcheckrc"
   ],
   "shellcheck.useWorkspaceRootAsCwd": true,
-  // copilot
+  // * CoPilot / AI
   "chat.mcp.discovery.enabled": true,
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
       "text": "Use the Conventional Commits specification to create commit message with scope to keep consistent commit history. Do not use file extension. Must be less than 100 characters."
     }
   ],
-  // misc
+  // * Misc
+  "dotenv.enableAutocloaking": false,
   "sarif-viewer.connectToGithubCodeScanning": "on"
 }

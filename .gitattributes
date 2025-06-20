@@ -16,3 +16,5 @@
 *.vsdx binary
 
 dist/** -diff linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
+package-lock.json linguist-generated=true
