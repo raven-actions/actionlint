@@ -89,7 +89,7 @@ runs:
   using: composite
   steps:
     - name: Set tool environment
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
       id: environment
       with:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
@@ -209,7 +209,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
 
     - name: Download tool
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       with:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
@@ -245,7 +245,7 @@ runs:
         INPUT_MATCHER_PATH: ${{ steps.environment.outputs.matcher-path }}
 
     - name: Install tool dependencies
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
       if: ${{ inputs.pyflakes == 'true' || inputs.shellcheck == 'true' }}
       id: tool-dependencies
       with:
@@ -311,7 +311,7 @@ runs:
         INPUT_SHELLCHECK: ${{ inputs.shellcheck }}
 
     - name: Run tool
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
       id: tool-runner
       with:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
