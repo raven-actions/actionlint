@@ -204,7 +204,7 @@ runs:
 
     - name: Install dependencies
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
-      run: npm install @actions/tool-cache
+      run: npm install --no-save --ignore-scripts @actions/tool-cache
       shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
