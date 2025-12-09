@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Debug
-        uses: raven-actions/debug@v1
+        uses: raven-actions/debug@9dbdeb7eea607a7d73411895c65987e71d59a466 # v1.2.0
         with:
           vars-context: ${{ toJson(vars) }}
           secrets-context: ${{ toJson(secrets) }}
@@ -86,7 +86,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: actionlint Action
         id: actionlint
