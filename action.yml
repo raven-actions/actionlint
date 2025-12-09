@@ -89,7 +89,7 @@ runs:
   using: composite
   steps:
     - name: Set tool environment
-      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       id: environment
       with:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
@@ -197,7 +197,7 @@ runs:
     - name: Set cache
       if: ${{ inputs.cache == 'true' }}
       id: tool-cache
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
         path: ${{ steps.environment.outputs.tool-dir-path }}
         key: ${{ format('{0}-{1}-{2}-{3}', steps.environment.outputs.tool-name, steps.environment.outputs.tool-version-semver, runner.os, runner.arch) }}
@@ -209,7 +209,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
 
     - name: Download tool
-      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       with:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
@@ -245,7 +245,7 @@ runs:
         INPUT_MATCHER_PATH: ${{ steps.environment.outputs.matcher-path }}
 
     - name: Install tool dependencies
-      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       if: ${{ inputs.pyflakes == 'true' || inputs.shellcheck == 'true' }}
       id: tool-dependencies
       with:
@@ -311,7 +311,7 @@ runs:
         INPUT_SHELLCHECK: ${{ inputs.shellcheck }}
 
     - name: Run tool
-      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       id: tool-runner
       with:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
