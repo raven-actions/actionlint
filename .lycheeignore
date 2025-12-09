@@ -7,3 +7,6 @@ https://github.com/marketplace/actions/publish-and-tag
 https://github.com/raven-actions/test/releases/v1.2.3
 
 https://aquasecurity.github.io/trivy-repo/deb
+https://taskfile.dev
+https://taskfile.dev/schema.json
+https://raw.githubusercontent.com/$%7BINPUT_REPO_OWNER%7D/$%7BINPUT_REPO_NAME%7D/$%7BversionTag%7D/.github/actionlint-matcher.json
