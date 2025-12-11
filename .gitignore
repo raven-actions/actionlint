@@ -148,6 +148,7 @@ __tests__/runner/*
 
 # Custom
 .lycheecache
+reports/*
 *-report.xml
 *-report.md
 *-report.json
