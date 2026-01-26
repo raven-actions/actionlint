@@ -16,12 +16,13 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   linter:
     uses: raven-actions/.workflows/.github/workflows/__linter.yml@main
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     secrets: inherit

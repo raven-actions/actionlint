@@ -2,25 +2,21 @@
   "inputs": [
     {
       "type": "promptString",
-      "id": "github_token",
-      "description": "GitHub Personal Access Token",
+      "id": "CONTEXT7_API_KEY",
+      "description": "Context7 API Key",
       "password": true
     }
   ],
   "servers": {
-    // GitHub MCP Server: https://github.com/github/github-mcp-server
-    "GitHub MCP Server": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "ghcr.io/github/github-mcp-server"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}"
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "${input:CONTEXT7_API_KEY}"
       }
     }
   }
