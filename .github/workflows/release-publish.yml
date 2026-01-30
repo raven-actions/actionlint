@@ -15,6 +15,8 @@ jobs:
   publish-release:
     name: Publish Release
     uses: raven-actions/.workflows/.github/workflows/__release-publish.yml@main
+    permissions:
+      contents: write
     secrets: inherit
     with:
       tag-name: ${{ github.event.inputs.tag-name || github.event.release.tag_name }}
