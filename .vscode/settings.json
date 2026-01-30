@@ -2,7 +2,7 @@
   "search.exclude": {
     "pnpm-lock.yaml": true,
     "package-lock.json": true,
-    "yarn.lock": true,
+    "yarn.lock": true
   },
   "npm.packageManager": "pnpm",
   // * Explorer
@@ -10,7 +10,7 @@
   "explorer.fileNesting.patterns": {
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig*.json, .npmrc, .nvmrc, .pnpmfile.*js",
     "README.md": "CODE_OF_CONDUCT.md, CHANGELOG.md, SECURITY.md, CONTRIBUTING.md, LICENSE",
-    "go.mod": "go.sum, go.work",
+    "go.mod": "go.sum, go.work"
   },
   // * Git
   "git.autorefresh": true,
@@ -106,7 +106,7 @@
   "go.formatTool": "custom",
   "go.formatFlags": [
     "fmt",
-    "--stdin",
+    "--stdin"
   ],
   "gopls": {
     "formatting.gofumpt": true,
@@ -118,6 +118,9 @@
     "./.github/linters/.cspell.yml"
   ],
   "prettier.configPath": "./.github/linters/.prettierrc.yml",
+  "eslint.options": {
+    "overrideConfigFile": "./.github/linters/eslint.config.mjs"
+  },
   "linter.linters": {
     "yamllint": {
       "configFiles": [
@@ -151,7 +154,12 @@
   ],
   "shellcheck.useWorkspaceRootAsCwd": true,
   // * CoPilot / AI
-  "chat.mcp.discovery.enabled": true,
+  "chat.mcp.discovery.enabled": {
+    "claude-desktop": true,
+    "windsurf": true,
+    "cursor-global": true,
+    "cursor-workspace": true
+  },
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
       "text": "Use the Conventional Commits specification to create commit message with scope to keep consistent commit history. Do not use file extension. Must be less than 100 characters."
