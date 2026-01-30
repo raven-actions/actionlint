@@ -10,3 +10,4 @@ https://taskfile.dev
 https://taskfile.dev/schema.json
 https://mcp.context7.com/mcp
 https://api.githubcopilot.com/mcp
+https://raw.githubusercontent.com/$%7BINPUT_REPO_OWNER%7D/$%7BINPUT_REPO_NAME%7D/$%7BversionTag%7D/.github/actionlint-matcher.json
