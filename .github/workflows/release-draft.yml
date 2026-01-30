@@ -10,4 +10,7 @@ jobs:
   draft-release:
     name: Draft Release
     uses: raven-actions/.workflows/.github/workflows/__release-draft.yml@main
+    permissions:
+      contents: write
+      pull-requests: read
     secrets: inherit
