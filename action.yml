@@ -92,7 +92,6 @@ runs:
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       id: environment
       with:
-        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_TOOL_NAME, INPUT_TOOL_SEMVER, INPUT_REPO_OWNER, INPUT_REPO_NAME, RUNNER_TEMP } = process.env
@@ -147,34 +146,35 @@ runs:
               process.exit(core.ExitCode.Failure)
           }
 
-          // helpers
-          async function getToolReleaseLatest() {
-            const response = await github.rest.repos.getLatestRelease({
-              owner: INPUT_REPO_OWNER,
-              repo: INPUT_REPO_NAME
+          // resolve version tag without a GitHub API call
+          let versionTag
+          const isLatest = !INPUT_TOOL_SEMVER || INPUT_TOOL_SEMVER === 'latest'
+
+          if (isLatest) {
+            // follow the redirect on the public releases/latest page to discover the tag
+            const https = require('https')
+            versionTag = await new Promise((resolve, reject) => {
+              https.get(
+                `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/latest`,
+                (res) => {
+                  const location = res.headers['location']
+                  if (location) {
+                    resolve(location.split('/').pop().trim())
+                  } else {
+                    reject(new Error(`[${INPUT_TOOL_NAME}] Could not resolve latest release tag from redirect`))
+                  }
+                  res.resume()
+                }
+              ).on('error', reject)
             })
-            return response.data
+          } else {
+            // construct the tag directly — no API call needed
+            versionTag = `v${INPUT_TOOL_SEMVER}`
           }
 
-          async function getToolReleaseByTag(versionTag) {
-            const response = await github.rest.repos.getReleaseByTag({
-              owner: INPUT_REPO_OWNER,
-              repo: INPUT_REPO_NAME,
-              tag: versionTag
-            })
-            return response.data
-          }
-
-          // get tool release data
-          const release =
-            INPUT_TOOL_SEMVER === 'latest' || INPUT_TOOL_SEMVER === '' || INPUT_TOOL_SEMVER === undefined || INPUT_TOOL_SEMVER === null
-              ? await getToolReleaseLatest()
-              : await getToolReleaseByTag(`v${INPUT_TOOL_SEMVER}`)
-
-          const versionTag = release.tag_name
           const versionSemVer = versionTag.replace(/^v/, '')
           const toolDirPath = core.toPlatformPath(`${RUNNER_TEMP}/${INPUT_TOOL_NAME}-${versionSemVer}`)
-          const toolDownloadUrl = release.assets.find(asset => asset.name === `${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`).browser_download_url.trim()
+          const toolDownloadUrl = `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/download/${versionTag}/${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`
           const matcherDownloadUrl = `https://raw.githubusercontent.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/${versionTag}/.github/actionlint-matcher.json`
           const matcherPath = core.toPlatformPath(`${toolDirPath}/actionlint-matcher.json`)
 
@@ -212,7 +212,6 @@ runs:
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
       with:
-        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // dependencies
           const tc = require('@actions/tool-cache')
@@ -249,7 +248,6 @@ runs:
       if: ${{ inputs.pyflakes == 'true' || inputs.shellcheck == 'true' }}
       id: tool-dependencies
       with:
-        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_PYFLAKES, INPUT_SHELLCHECK } = process.env
@@ -314,7 +312,6 @@ runs:
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       id: tool-runner
       with:
-        github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
           const { INPUT_FILES, INPUT_FLAGS, INPUT_TOOL_NAME, INPUT_TOOL_DIR_PATH, INPUT_MATCHER, INPUT_MATCHER_PATH, INPUT_TOOL_EXECUTABLE, INPUT_JSON, INPUT_FAIL_ON_ERROR, INPUT_PYFLAKES, INPUT_SHELLCHECK, INPUT_GROUP_RESULT, DEBUG } = process.env
