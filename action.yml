@@ -153,7 +153,7 @@ runs:
 
           // discover the latest tag by following the redirect on the public releases/latest page (no API call)
           async function getLatestTagFromRedirect() {
-            const https = require('https')
+            const https = await import('node:https')
             return await new Promise((resolve, reject) => {
               const request = https.get(
                 `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/latest`,
@@ -238,7 +238,13 @@ runs:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // dependencies
-          const tc = require('@actions/tool-cache')
+          // github-script runs this inline script in a non-module context, so the workspace-installed
+          // package is resolved from the working directory and then imported as ESM
+          const { createRequire } = await import('node:module')
+          const { pathToFileURL } = await import('node:url')
+          const { join } = await import('node:path')
+          const toolCacheUrl = pathToFileURL(createRequire(join(process.cwd(), 'index.js')).resolve('@actions/tool-cache')).href
+          const tc = (await import(toolCacheUrl)).default
 
           // input envs
           const { INPUT_TOOL_NAME, INPUT_TOOL_DIR_PATH, INPUT_TOOL_DOWNLOAD_URL, INPUT_MATCHER_DOWNLOAD_URL, INPUT_MATCHER_PATH } = process.env
@@ -416,8 +422,8 @@ runs:
           const { exitCode, stdout, stderr } = await exec.getExecOutput(INPUT_TOOL_EXECUTABLE, toolFlags, { silent: true, ignoreReturnCode: true })
 
           //if (INPUT_JSON === 'true') {
-          //  const fs = require('fs')
-          //   const path = require('path')
+          //  const fs = await import('node:fs')
+          //   const path = await import('node:path')
           //   const jsonPath = path.join(process.env.GITHUB_WORKSPACE, 'actionlint.json')
           //   fs.writeFileSync(jsonPath, stdout)
           //   core.info(`##[add-annotation]file=${jsonPath},title=actionlint.json`)
