@@ -147,34 +147,57 @@ runs:
               process.exit(core.ExitCode.Failure)
           }
 
-          // helpers
-          async function getToolReleaseLatest() {
+          // resolve the release tag while avoiding GitHub API calls where possible
+          // (REST calls count against the GITHUB_TOKEN rate limit, which busy CI can exhaust)
+          const isLatest = !INPUT_TOOL_SEMVER || INPUT_TOOL_SEMVER === 'latest'
+
+          // discover the latest tag by following the redirect on the public releases/latest page (no API call)
+          async function getLatestTagFromRedirect() {
+            const https = require('https')
+            return await new Promise((resolve, reject) => {
+              const request = https.get(
+                `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/latest`,
+                { headers: { 'user-agent': INPUT_TOOL_NAME } },
+                (res) => {
+                  res.resume() // drain the response so the socket can close
+                  const location = res.headers['location']
+                  if (res.statusCode >= 300 && res.statusCode < 400 && location) {
+                    resolve(location.split('/').pop().trim())
+                  } else {
+                    reject(new Error(`unexpected response (status: ${res.statusCode})`))
+                  }
+                }
+              )
+              request.setTimeout(10000, () => request.destroy(new Error('request timed out')))
+              request.on('error', reject)
+            })
+          }
+
+          // proxy-aware fallback via the authenticated client; only used if the redirect approach fails
+          async function getLatestTagFromApi() {
             const response = await github.rest.repos.getLatestRelease({
               owner: INPUT_REPO_OWNER,
               repo: INPUT_REPO_NAME
             })
-            return response.data
+            return response.data.tag_name
           }
 
-          async function getToolReleaseByTag(versionTag) {
-            const response = await github.rest.repos.getReleaseByTag({
-              owner: INPUT_REPO_OWNER,
-              repo: INPUT_REPO_NAME,
-              tag: versionTag
-            })
-            return response.data
+          let versionTag
+          if (isLatest) {
+            try {
+              versionTag = await getLatestTagFromRedirect()
+            } catch (err) {
+              core.debug(`[${INPUT_TOOL_NAME}] latest-release redirect failed (${err.message}); falling back to GitHub API`)
+              versionTag = await getLatestTagFromApi()
+            }
+          } else {
+            // pinned version: build the tag directly, no network call needed
+            versionTag = `v${INPUT_TOOL_SEMVER.replace(/^v/, '')}`
           }
 
-          // get tool release data
-          const release =
-            INPUT_TOOL_SEMVER === 'latest' || INPUT_TOOL_SEMVER === '' || INPUT_TOOL_SEMVER === undefined || INPUT_TOOL_SEMVER === null
-              ? await getToolReleaseLatest()
-              : await getToolReleaseByTag(`v${INPUT_TOOL_SEMVER}`)
-
-          const versionTag = release.tag_name
           const versionSemVer = versionTag.replace(/^v/, '')
           const toolDirPath = core.toPlatformPath(`${RUNNER_TEMP}/${INPUT_TOOL_NAME}-${versionSemVer}`)
-          const toolDownloadUrl = release.assets.find(asset => asset.name === `${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`).browser_download_url.trim()
+          const toolDownloadUrl = `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/download/${versionTag}/${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`
           const matcherDownloadUrl = `https://raw.githubusercontent.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/${versionTag}/.github/actionlint-matcher.json`
           const matcherPath = core.toPlatformPath(`${toolDirPath}/actionlint-matcher.json`)
 
@@ -222,7 +245,16 @@ runs:
 
           // download tool
           await io.mkdirP(INPUT_TOOL_DIR_PATH)
-          const toolTempPath = await tc.downloadTool(INPUT_TOOL_DOWNLOAD_URL)
+          let toolTempPath
+          try {
+            toolTempPath = await tc.downloadTool(INPUT_TOOL_DOWNLOAD_URL)
+          } catch (err) {
+            if (err && err.httpStatusCode === 404) {
+              core.setFailed(`[${INPUT_TOOL_NAME}] Release asset not found (HTTP 404) - check the 'version' input points to a published release: ${INPUT_TOOL_DOWNLOAD_URL}`)
+              process.exit(core.ExitCode.Failure)
+            }
+            throw err
+          }
 
           // extract tool
           if (INPUT_TOOL_DOWNLOAD_URL.endsWith('.zip')) {
