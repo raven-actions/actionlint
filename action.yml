@@ -227,7 +227,7 @@ runs:
 
     - name: Install dependencies
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
-      run: npm install --no-save --ignore-scripts --legacy-peer-deps @actions/tool-cache@4.0.0
+      run: npm install --prefix "${{ runner.temp }}/actionlint-action" --no-save --no-package-lock --no-audit --no-fund --ignore-scripts --legacy-peer-deps @actions/tool-cache@4.0.0
       shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
@@ -238,12 +238,13 @@ runs:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // dependencies
-          // @actions/tool-cache v4 is a pure-ESM package installed into the workspace; github-script
-          // evaluates this inline script in a non-module context where bare specifiers can't be resolved,
-          // so import it directly via its file URL under the working directory
+          // @actions/tool-cache v4 is a pure-ESM package installed into an isolated RUNNER_TEMP dir, so it
+          // neither pollutes nor is affected by the user's workspace node_modules; github-script evaluates
+          // this inline script in a non-module context where bare specifiers can't be resolved, so import
+          // it directly via its file URL
           const { pathToFileURL } = await import('node:url')
           const { join } = await import('node:path')
-          const toolCacheEntry = join(process.cwd(), 'node_modules', '@actions', 'tool-cache', 'lib', 'tool-cache.js')
+          const toolCacheEntry = join(process.env.RUNNER_TEMP, 'actionlint-action', 'node_modules', '@actions', 'tool-cache', 'lib', 'tool-cache.js')
           const tc = await import(pathToFileURL(toolCacheEntry).href)
 
           // input envs
