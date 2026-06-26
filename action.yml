@@ -227,7 +227,7 @@ runs:
 
     - name: Install dependencies
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
-      run: npm install --no-save --ignore-scripts --legacy-peer-deps @actions/tool-cache@3.0.1
+      run: npm install --no-save --ignore-scripts --legacy-peer-deps @actions/tool-cache@4.0.0
       shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
@@ -238,13 +238,13 @@ runs:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // dependencies
-          // github-script runs this inline script in a non-module context, so the workspace-installed
-          // package is resolved from the working directory and then imported as ESM
-          const { createRequire } = await import('node:module')
+          // @actions/tool-cache v4 is a pure-ESM package installed into the workspace; github-script
+          // evaluates this inline script in a non-module context where bare specifiers can't be resolved,
+          // so import it directly via its file URL under the working directory
           const { pathToFileURL } = await import('node:url')
           const { join } = await import('node:path')
-          const toolCacheUrl = pathToFileURL(createRequire(join(process.cwd(), 'index.js')).resolve('@actions/tool-cache')).href
-          const tc = (await import(toolCacheUrl)).default
+          const toolCacheEntry = join(process.cwd(), 'node_modules', '@actions', 'tool-cache', 'lib', 'tool-cache.js')
+          const tc = await import(pathToFileURL(toolCacheEntry).href)
 
           // input envs
           const { INPUT_TOOL_NAME, INPUT_TOOL_DIR_PATH, INPUT_TOOL_DOWNLOAD_URL, INPUT_MATCHER_DOWNLOAD_URL, INPUT_MATCHER_PATH } = process.env
