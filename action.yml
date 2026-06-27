@@ -62,6 +62,10 @@ inputs:
     description: GitHub Token
     required: false
     default: ${{ github.token }}
+  github-server-url:
+    description: GitHub server to download the actionlint tool from. Defaults to public github.com so the external rhysd/actionlint tool is always found; override only if you mirror rhysd/actionlint on your GHES, e.g. https://ghes.example.com
+    required: false
+    default: https://github.com
 outputs:
   version-semver:
     description: SemVer version
@@ -95,7 +99,7 @@ runs:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // input envs
-          const { INPUT_TOOL_NAME, INPUT_TOOL_SEMVER, INPUT_REPO_OWNER, INPUT_REPO_NAME, RUNNER_TEMP } = process.env
+          const { INPUT_TOOL_NAME, INPUT_TOOL_SEMVER, INPUT_REPO_OWNER, INPUT_REPO_NAME, INPUT_GITHUB_SERVER_URL, RUNNER_TEMP } = process.env
 
           // define tool platform and arch
           const processPlatform = process.platform // https://nodejs.org/api/process.html#processplatform
@@ -147,16 +151,22 @@ runs:
               process.exit(core.ExitCode.Failure)
           }
 
+          // GitHub server to fetch the tool from (defaults to public github.com so the external
+          // rhysd/actionlint tool is always found; override via github-server-url for a GHES mirror)
+          const serverUrl = (INPUT_GITHUB_SERVER_URL || 'https://github.com').replace(/\/+$/, '')
+          const apiBaseUrl = serverUrl === 'https://github.com' ? 'https://api.github.com' : `${serverUrl}/api/v3`
+          const rawBaseUrl = serverUrl === 'https://github.com' ? 'https://raw.githubusercontent.com' : `${serverUrl}/raw`
+
           // resolve the release tag while avoiding GitHub API calls where possible
           // (REST calls count against the GITHUB_TOKEN rate limit, which busy CI can exhaust)
           const isLatest = !INPUT_TOOL_SEMVER || INPUT_TOOL_SEMVER === 'latest'
 
-          // discover the latest tag by following the redirect on the public releases/latest page (no API call)
+          // discover the latest tag by following the redirect on the releases/latest page (no API call)
           async function getLatestTagFromRedirect() {
             const https = await import('node:https')
             return await new Promise((resolve, reject) => {
               const request = https.get(
-                `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/latest`,
+                `${serverUrl}/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/latest`,
                 { headers: { 'user-agent': INPUT_TOOL_NAME } },
                 (res) => {
                   res.resume() // drain the response so the socket can close
@@ -175,9 +185,10 @@ runs:
 
           // proxy-aware fallback via the authenticated client; only used if the redirect approach fails
           async function getLatestTagFromApi() {
-            const response = await github.rest.repos.getLatestRelease({
+            const response = await github.request('GET /repos/{owner}/{repo}/releases/latest', {
               owner: INPUT_REPO_OWNER,
-              repo: INPUT_REPO_NAME
+              repo: INPUT_REPO_NAME,
+              baseUrl: apiBaseUrl
             })
             return response.data.tag_name
           }
@@ -197,8 +208,8 @@ runs:
 
           const versionSemVer = versionTag.replace(/^v/, '')
           const toolDirPath = core.toPlatformPath(`${RUNNER_TEMP}/${INPUT_TOOL_NAME}-${versionSemVer}`)
-          const toolDownloadUrl = `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/download/${versionTag}/${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`
-          const matcherDownloadUrl = `https://raw.githubusercontent.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/${versionTag}/.github/actionlint-matcher.json`
+          const toolDownloadUrl = `${serverUrl}/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/download/${versionTag}/${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`
+          const matcherDownloadUrl = `${rawBaseUrl}/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/${versionTag}/.github/actionlint-matcher.json`
           const matcherPath = core.toPlatformPath(`${toolDirPath}/actionlint-matcher.json`)
 
           // set outputs
@@ -216,6 +227,7 @@ runs:
         INPUT_REPO_OWNER: "rhysd"
         INPUT_REPO_NAME: "actionlint"
         INPUT_TOOL_SEMVER: ${{ inputs.version }}
+        INPUT_GITHUB_SERVER_URL: ${{ inputs.github-server-url }}
 
     - name: Set cache
       if: ${{ inputs.cache == 'true' }}
