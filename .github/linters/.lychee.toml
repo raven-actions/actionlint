@@ -97,14 +97,10 @@ method = "get"
 
 # Custom request headers
 # header = { "accept" = "text/html", "x-custom-header" = "value" }
-headers = [
-  # Avoid being blocked by GitHub's anti-bot measures
-  "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-  # Some sites require this header
-  "Accept-Language=en-US,en;q=0.5",
-  # Disable compression to avoid issues with some servers
-  "Accept-Encoding=identity",
-]
+# Accept: avoid being blocked by GitHub's anti-bot measures
+# Accept-Language: some sites require this header
+# Accept-Encoding=identity: disable compression to avoid issues with some servers
+header = { "Accept" = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language" = "en-US,en;q=0.5", "Accept-Encoding" = "identity" }
 
 # Remap URI matching pattern to different URI.
 # remap = ["https://example.com http://example.invalid"]
@@ -134,20 +130,25 @@ exclude = [
   '^https://cli\.github\.com',
   '^https://www\.linkedin\.com',
   '^https://web\.archive\.org/web/',
+  # Templated/placeholder URLs from the embedded action scripts (e.g. ${VAR}); not real links.
+  # lychee percent-encodes `{`/`}` to %7B/%7D, so match both the encoded and raw forms.
+  '%7[Bb]',
+  '\$\{',
 ]
 
 # Exclude these filesystem paths from getting checked.
+# NOTE: lychee compiles these as regular expressions (like `exclude`), not globs.
 exclude_path = [
-  ".github/configs/release-drafter.yml",
-  "*/node_modules/*",
-  "*/.git/*",
-  "*/.venv/*",
-  "*/venv/*",
-  "*/__pycache__/*",
-  "*/target/*",
-  "*/build/*",
-  "*/dist/*",
-  "*/megalinter-reports/*",
+  '\.github/configs/release-drafter\.yml',
+  '(^|/)node_modules(/|$)',
+  '(^|/)\.git(/|$)',
+  '(^|/)\.venv(/|$)',
+  '(^|/)venv(/|$)',
+  '(^|/)__pycache__(/|$)',
+  '(^|/)target(/|$)',
+  '(^|/)build(/|$)',
+  '(^|/)dist(/|$)',
+  '(^|/)megalinter-reports(/|$)',
 ]
 
 # URLs to check (supports regex). Has preference over all excludes.

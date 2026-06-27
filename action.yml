@@ -147,34 +147,57 @@ runs:
               process.exit(core.ExitCode.Failure)
           }
 
-          // helpers
-          async function getToolReleaseLatest() {
+          // resolve the release tag while avoiding GitHub API calls where possible
+          // (REST calls count against the GITHUB_TOKEN rate limit, which busy CI can exhaust)
+          const isLatest = !INPUT_TOOL_SEMVER || INPUT_TOOL_SEMVER === 'latest'
+
+          // discover the latest tag by following the redirect on the public releases/latest page (no API call)
+          async function getLatestTagFromRedirect() {
+            const https = await import('node:https')
+            return await new Promise((resolve, reject) => {
+              const request = https.get(
+                `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/latest`,
+                { headers: { 'user-agent': INPUT_TOOL_NAME } },
+                (res) => {
+                  res.resume() // drain the response so the socket can close
+                  const location = res.headers['location']
+                  if (res.statusCode >= 300 && res.statusCode < 400 && location) {
+                    resolve(location.split('/').pop().trim())
+                  } else {
+                    reject(new Error(`unexpected response (status: ${res.statusCode})`))
+                  }
+                }
+              )
+              request.setTimeout(10000, () => request.destroy(new Error('request timed out')))
+              request.on('error', reject)
+            })
+          }
+
+          // proxy-aware fallback via the authenticated client; only used if the redirect approach fails
+          async function getLatestTagFromApi() {
             const response = await github.rest.repos.getLatestRelease({
               owner: INPUT_REPO_OWNER,
               repo: INPUT_REPO_NAME
             })
-            return response.data
+            return response.data.tag_name
           }
 
-          async function getToolReleaseByTag(versionTag) {
-            const response = await github.rest.repos.getReleaseByTag({
-              owner: INPUT_REPO_OWNER,
-              repo: INPUT_REPO_NAME,
-              tag: versionTag
-            })
-            return response.data
+          let versionTag
+          if (isLatest) {
+            try {
+              versionTag = await getLatestTagFromRedirect()
+            } catch (err) {
+              core.debug(`[${INPUT_TOOL_NAME}] latest-release redirect failed (${err.message}); falling back to GitHub API`)
+              versionTag = await getLatestTagFromApi()
+            }
+          } else {
+            // pinned version: build the tag directly, no network call needed
+            versionTag = `v${INPUT_TOOL_SEMVER.replace(/^v/, '')}`
           }
 
-          // get tool release data
-          const release =
-            INPUT_TOOL_SEMVER === 'latest' || INPUT_TOOL_SEMVER === '' || INPUT_TOOL_SEMVER === undefined || INPUT_TOOL_SEMVER === null
-              ? await getToolReleaseLatest()
-              : await getToolReleaseByTag(`v${INPUT_TOOL_SEMVER}`)
-
-          const versionTag = release.tag_name
           const versionSemVer = versionTag.replace(/^v/, '')
           const toolDirPath = core.toPlatformPath(`${RUNNER_TEMP}/${INPUT_TOOL_NAME}-${versionSemVer}`)
-          const toolDownloadUrl = release.assets.find(asset => asset.name === `${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`).browser_download_url.trim()
+          const toolDownloadUrl = `https://github.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/releases/download/${versionTag}/${INPUT_TOOL_NAME}_${versionSemVer}_${toolOs}_${toolArch}.${toolExt}`
           const matcherDownloadUrl = `https://raw.githubusercontent.com/${INPUT_REPO_OWNER}/${INPUT_REPO_NAME}/${versionTag}/.github/actionlint-matcher.json`
           const matcherPath = core.toPlatformPath(`${toolDirPath}/actionlint-matcher.json`)
 
@@ -204,7 +227,7 @@ runs:
 
     - name: Install dependencies
       if: ${{ steps.tool-cache.outputs.cache-hit != 'true' }}
-      run: npm install --no-save --ignore-scripts --legacy-peer-deps @actions/tool-cache@3.0.1
+      run: npm install --prefix "${{ runner.temp }}/actionlint-action" --no-save --no-package-lock --no-audit --no-fund --ignore-scripts --legacy-peer-deps @actions/tool-cache@4.0.0
       shell: ${{ (runner.os == 'Windows' && 'pwsh') || 'bash' }}
       working-directory: ${{ inputs.working-directory }}
 
@@ -215,14 +238,30 @@ runs:
         github-token: ${{ inputs.github-token || inputs.token || env.GITHUB_TOKEN }}
         script: |
           // dependencies
-          const tc = require('@actions/tool-cache')
+          // @actions/tool-cache v4 is a pure-ESM package installed into an isolated RUNNER_TEMP dir, so it
+          // neither pollutes nor is affected by the user's workspace node_modules; github-script evaluates
+          // this inline script in a non-module context where bare specifiers can't be resolved, so import
+          // it directly via its file URL
+          const { pathToFileURL } = await import('node:url')
+          const { join } = await import('node:path')
+          const toolCacheEntry = join(process.env.RUNNER_TEMP, 'actionlint-action', 'node_modules', '@actions', 'tool-cache', 'lib', 'tool-cache.js')
+          const tc = await import(pathToFileURL(toolCacheEntry).href)
 
           // input envs
           const { INPUT_TOOL_NAME, INPUT_TOOL_DIR_PATH, INPUT_TOOL_DOWNLOAD_URL, INPUT_MATCHER_DOWNLOAD_URL, INPUT_MATCHER_PATH } = process.env
 
           // download tool
           await io.mkdirP(INPUT_TOOL_DIR_PATH)
-          const toolTempPath = await tc.downloadTool(INPUT_TOOL_DOWNLOAD_URL)
+          let toolTempPath
+          try {
+            toolTempPath = await tc.downloadTool(INPUT_TOOL_DOWNLOAD_URL)
+          } catch (err) {
+            if (err && err.httpStatusCode === 404) {
+              core.setFailed(`[${INPUT_TOOL_NAME}] Release asset not found (HTTP 404) - check the 'version' input points to a published release: ${INPUT_TOOL_DOWNLOAD_URL}`)
+              process.exit(core.ExitCode.Failure)
+            }
+            throw err
+          }
 
           // extract tool
           if (INPUT_TOOL_DOWNLOAD_URL.endsWith('.zip')) {
@@ -384,8 +423,8 @@ runs:
           const { exitCode, stdout, stderr } = await exec.getExecOutput(INPUT_TOOL_EXECUTABLE, toolFlags, { silent: true, ignoreReturnCode: true })
 
           //if (INPUT_JSON === 'true') {
-          //  const fs = require('fs')
-          //   const path = require('path')
+          //  const fs = await import('node:fs')
+          //   const path = await import('node:path')
           //   const jsonPath = path.join(process.env.GITHUB_WORKSPACE, 'actionlint.json')
           //   fs.writeFileSync(jsonPath, stdout)
           //   core.info(`##[add-annotation]file=${jsonPath},title=actionlint.json`)
