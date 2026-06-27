@@ -107,3 +107,58 @@ jobs:
           echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
           # shellcheck disable=SC2242
           exit ${{ steps.actionlint.outputs.exit-code }}
+
+  dog-food-non-npm:
+    name: Dog food (pnpm/non-npm repo)
+    needs:
+      - dog-food
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      # Regression guard for issues #26 and #60:
+      #   #26 - the action's internal `npm install` of @actions/tool-cache must not break in a
+      #         consuming repo that uses pnpm/workspaces (a `workspace:` protocol dependency makes
+      #         a plain `npm install` fail with EUNSUPPORTEDPROTOCOL).
+      #   #60 - the action must not leave a stray node_modules behind in the workspace.
+      - name: Simulate a pnpm/workspace (non-npm) repo
+        run: |
+          cat > package.json <<'EOF'
+          {
+            "name": "non-npm-consumer",
+            "version": "1.0.0",
+            "private": true,
+            "packageManager": "pnpm@9.0.0",
+            "dependencies": {
+              "some-internal-pkg": "workspace:*"
+            },
+            "scripts": {
+              "preinstall": "npx only-allow pnpm"
+            }
+          }
+          EOF
+          printf 'packages:\n  - "packages/*"\n' > pnpm-workspace.yaml
+
+      - name: actionlint Action
+        id: actionlint
+        uses: ./
+        with:
+          cache: false # force the internal npm install to run (skip the cache-hit short-circuit)
+          files: "tests/fixtures/*.yml, tests/fixtures/*.yaml"
+          flags: "-ignore SC2086"
+          fail-on-error: false
+
+      - name: Verify the tool ran and left no stray node_modules
+        run: |
+          echo "version: ${{ steps.actionlint.outputs.version-semver }} / exit-code: ${{ steps.actionlint.outputs.exit-code }}"
+          # outputs are only populated once environment + npm install + download succeeded
+          if [ -z "${{ steps.actionlint.outputs.exit-code }}" ]; then
+            echo "::error::actionlint did not run - internal npm install of @actions/tool-cache likely failed (#26 regression)"
+            exit 1
+          fi
+          # the action must not pollute the workspace with a node_modules directory
+          if [ -d node_modules ]; then
+            echo "::error::stray node_modules left in the workspace (#60 regression)"
+            exit 1
+          fi
