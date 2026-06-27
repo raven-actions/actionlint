@@ -117,10 +117,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      # Regression guard for https://github.com/raven-actions/actionlint/issues/26:
-      # the action's internal `npm install` of @actions/tool-cache must not be broken by a
-      # consuming repo that uses pnpm/workspaces. A `workspace:` protocol dependency makes a
-      # plain `npm install` fail with EUNSUPPORTEDPROTOCOL, so this simulates such a repo.
+      # Regression guard for issues #26 and #60:
+      #   #26 - the action's internal `npm install` of @actions/tool-cache must not break in a
+      #         consuming repo that uses pnpm/workspaces (a `workspace:` protocol dependency makes
+      #         a plain `npm install` fail with EUNSUPPORTEDPROTOCOL).
+      #   #60 - the action must not leave a stray node_modules behind in the workspace.
       - name: Simulate a pnpm/workspace (non-npm) repo
         run: |
           cat > package.json <<'EOF'
@@ -148,11 +149,16 @@ jobs:
           flags: "-ignore SC2086"
           fail-on-error: false
 
-      - name: Verify the tool installed and ran
+      - name: Verify the tool ran and left no stray node_modules
         run: |
           echo "version: ${{ steps.actionlint.outputs.version-semver }} / exit-code: ${{ steps.actionlint.outputs.exit-code }}"
           # outputs are only populated once environment + npm install + download succeeded
           if [ -z "${{ steps.actionlint.outputs.exit-code }}" ]; then
             echo "::error::actionlint did not run - internal npm install of @actions/tool-cache likely failed (#26 regression)"
+            exit 1
+          fi
+          # the action must not pollute the workspace with a node_modules directory
+          if [ -d node_modules ]; then
+            echo "::error::stray node_modules left in the workspace (#60 regression)"
             exit 1
           fi
