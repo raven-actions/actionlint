@@ -130,6 +130,10 @@ exclude = [
   '^https://cli\.github\.com',
   '^https://www\.linkedin\.com',
   '^https://web\.archive\.org/web/',
+  # Templated/placeholder URLs from the embedded action scripts (e.g. ${VAR}); not real links.
+  # lychee percent-encodes `{`/`}` to %7B/%7D, so match both the encoded and raw forms.
+  '%7[Bb]',
+  '\$\{',
 ]
 
 # Exclude these filesystem paths from getting checked.
