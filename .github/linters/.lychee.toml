@@ -133,17 +133,18 @@ exclude = [
 ]
 
 # Exclude these filesystem paths from getting checked.
+# NOTE: lychee compiles these as regular expressions (like `exclude`), not globs.
 exclude_path = [
-  ".github/configs/release-drafter.yml",
-  "*/node_modules/*",
-  "*/.git/*",
-  "*/.venv/*",
-  "*/venv/*",
-  "*/__pycache__/*",
-  "*/target/*",
-  "*/build/*",
-  "*/dist/*",
-  "*/megalinter-reports/*",
+  '\.github/configs/release-drafter\.yml',
+  '(^|/)node_modules(/|$)',
+  '(^|/)\.git(/|$)',
+  '(^|/)\.venv(/|$)',
+  '(^|/)venv(/|$)',
+  '(^|/)__pycache__(/|$)',
+  '(^|/)target(/|$)',
+  '(^|/)build(/|$)',
+  '(^|/)dist(/|$)',
+  '(^|/)megalinter-reports(/|$)',
 ]
 
 # URLs to check (supports regex). Has preference over all excludes.
