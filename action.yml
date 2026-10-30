@@ -414,11 +414,61 @@ runs:
             toolFlags.push('-shellcheck', '')
           }
 
+          // split the flags input into arguments like a POSIX shell would:
+          // whitespace separates arguments, single quotes keep their content
+          // as-is, and double quotes group words, with \" and \\ as escapes.
+          // The quotes themselves are removed, because the arguments are passed
+          // to the tool directly and not through a shell. A backslash outside
+          // quotes is kept, so Windows paths and regex escapes still work.
+          function splitFlags(input) {
+            const args = []
+            let current = ''
+            let inArg = false
+            let quote = null
+            for (let i = 0; i < input.length; i++) {
+              const c = input[i]
+              if (quote === "'") {
+                if (c === "'") {
+                  quote = null
+                } else {
+                  current += c
+                }
+              } else if (quote === '"') {
+                if (c === '"') {
+                  quote = null
+                } else if (c === '\\' && (input[i + 1] === '"' || input[i + 1] === '\\')) {
+                  current += input[++i]
+                } else {
+                  current += c
+                }
+              } else if (/\s/.test(c)) {
+                if (inArg) {
+                  args.push(current)
+                  current = ''
+                  inArg = false
+                }
+              } else if (c === "'" || c === '"') {
+                quote = c
+                inArg = true
+              } else {
+                current += c
+                inArg = true
+              }
+            }
+            if (quote !== null) {
+              core.setFailed(`[${INPUT_TOOL_NAME}] The 'flags' input has an unterminated ${quote} quote: ${input}`)
+              process.exit(core.ExitCode.Failure)
+            }
+            if (inArg) {
+              args.push(current)
+            }
+            return args
+          }
+
           // set user tool flags
           if(INPUT_FLAGS !== '') {
-            const userFlags = INPUT_FLAGS.match(/(?:[^\s"]+|"[^"]*")+/g)
-            userFlags.forEach(flag => {
-              toolFlags.push(flag.trim())
+            splitFlags(INPUT_FLAGS).forEach(flag => {
+              toolFlags.push(flag)
             })
           }
 

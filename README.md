@@ -82,6 +82,26 @@ Action returns some basic information. For more details, follow [📤 Outputs](#
 |   `github-token`    |  false   | `string` |    `github.token`    | GitHub Token for API authentication.                                                                                                                        |
 | `github-server-url` |  false   | `string` | `https://github.com` | GitHub server to download the actionlint tool from. Defaults to public github.com; override only if you mirror `rhysd/actionlint` on your GHES.             |
 
+### Quoting in `flags`
+
+The `flags` input is split into arguments like a POSIX shell would split it, and the arguments are passed to `actionlint` directly, without a shell. This works the same way on Linux, macOS, and Windows runners.
+
+- Whitespace separates arguments.
+- Single quotes keep their content as it is: `'unexpected key "branch'` becomes one argument, `unexpected key "branch`.
+- Double quotes group words; inside them, `\"` gives `"` and `\\` gives `\`.
+- A backslash outside quotes is kept as it is, so patterns such as `SC\d+` work.
+- The quotes themselves are removed and are not passed to `actionlint`.
+- An unpaired quote fails the step with an error.
+
+Example:
+
+```yaml
+flags: -ignore SC2086 -ignore 'property ".+" is not defined in object type'
+```
+
+> [!TIP]
+> On Windows, use single quotes for paths. Inside double quotes, `\\` becomes `\`, so `"\\server\share"` loses one backslash.
+
 ## 📤 Outputs
 
 |       Name       |   Type   | Description                                                                                                                    |

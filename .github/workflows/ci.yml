@@ -108,6 +108,47 @@ jobs:
           # shellcheck disable=SC2242
           exit ${{ steps.actionlint.outputs.exit-code }}
 
+      # Regression guard for #71: a quoted pattern in `flags` must reach actionlint as a
+      # single argument without its quotes, on every runner. Before the fix the pattern was
+      # split on spaces, so actionlint read part of it as a file and failed with exit code 3.
+      # The baseline run uses the same fixtures without the two quoted patterns, so the
+      # quoted run must report exactly 4 fewer errors (2 files x 2 patterns).
+      - name: actionlint Action (quoted flags baseline)
+        id: actionlint-quoted-flags-baseline
+        uses: ./
+        with:
+          files: "tests/fixtures/*.yml, tests/fixtures/*.yaml"
+          flags: "-ignore SC2086"
+          fail-on-error: false
+          group-result: false
+
+      - name: actionlint Action (quoted flags)
+        id: actionlint-quoted-flags
+        uses: ./
+        with:
+          files: "tests/fixtures/*.yml, tests/fixtures/*.yaml"
+          flags: -ignore SC2086 -ignore 'unexpected key "branch' -ignore "label \"linux-latest\" is unknown"
+          fail-on-error: false
+          group-result: false
+
+      - name: Verify quoted flags reached actionlint intact
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          EXIT_CODE: ${{ steps.actionlint-quoted-flags.outputs.exit-code }}
+          TOTAL_FILES: ${{ steps.actionlint-quoted-flags.outputs.total-files }}
+          TOTAL_ERRORS: ${{ steps.actionlint-quoted-flags.outputs.total-errors }}
+          BASELINE_ERRORS: ${{ steps.actionlint-quoted-flags-baseline.outputs.total-errors }}
+        with:
+          script: |
+            const { EXIT_CODE, TOTAL_FILES, TOTAL_ERRORS, BASELINE_ERRORS } = process.env
+            core.info(`exit-code=${EXIT_CODE}, total-files=${TOTAL_FILES}, total-errors=${TOTAL_ERRORS}, baseline-errors=${BASELINE_ERRORS}`)
+            // 1 means lint errors were found; 3 would mean actionlint failed on its arguments
+            if (EXIT_CODE !== '1' || TOTAL_FILES !== '2') {
+              core.setFailed(`quoted flags were not passed as single arguments (#71 regression): exit-code=${EXIT_CODE}, total-files=${TOTAL_FILES}`)
+            } else if (Number(BASELINE_ERRORS) - Number(TOTAL_ERRORS) !== 4) {
+              core.setFailed(`quoted ignore patterns did not match (#71 regression): expected 4 fewer errors than the baseline, got baseline=${BASELINE_ERRORS}, quoted=${TOTAL_ERRORS}`)
+            }
+
   dog-food-non-npm:
     name: Dog food (pnpm/non-npm repo)
     needs:
