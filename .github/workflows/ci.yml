@@ -72,6 +72,30 @@ jobs:
           echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
           echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
 
+      # Regression guard for #71: a quoted pattern in `flags` must reach actionlint as a
+      # single argument without its quotes. Before the fix the pattern was split on spaces,
+      # so actionlint tried to read part of it as a file and failed with exit code 3.
+      - name: actionlint Action (quoted flags)
+        id: actionlint-quoted-flags
+        uses: ./
+        with:
+          files: "tests/fixtures/*.yml, tests/fixtures/*.yaml"
+          flags: -ignore 'unexpected key "branch' -ignore "label \"linux-latest\" is unknown"
+          fail-on-error: false
+          group-result: false
+
+      - name: Verify quoted flags were passed as single arguments
+        env:
+          EXIT_CODE: ${{ steps.actionlint-quoted-flags.outputs.exit-code }}
+          TOTAL_FILES: ${{ steps.actionlint-quoted-flags.outputs.total-files }}
+        run: |
+          echo "exit-code: ${EXIT_CODE} / total-files: ${TOTAL_FILES}"
+          # 1 means lint errors were found; 3 would mean actionlint failed on its arguments
+          if [ "${EXIT_CODE}" != "1" ] || [ "${TOTAL_FILES}" != "2" ]; then
+            echo "::error::quoted flags were not passed to actionlint as single arguments (#71 regression)"
+            exit 1
+          fi
+
   dog-food-matrix:
     name: Dog food (test runners)
     needs:
