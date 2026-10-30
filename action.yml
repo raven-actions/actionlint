@@ -456,7 +456,8 @@ runs:
               }
             }
             if (quote !== null) {
-              throw new Error(`flags input has an unterminated ${quote} quote: ${input}`)
+              core.setFailed(`[${INPUT_TOOL_NAME}] The 'flags' input has an unterminated ${quote} quote: ${input}`)
+              process.exit(core.ExitCode.Failure)
             }
             if (inArg) {
               args.push(current)
