@@ -66,6 +66,14 @@ inputs:
     description: GitHub server to download the actionlint tool from. Defaults to public github.com so the external rhysd/actionlint tool is always found; override only if you mirror rhysd/actionlint on your GHES, e.g. https://ghes.example.com
     required: false
     default: https://github.com
+  github-repo-owner:
+    description: The repository owner for the actionlint tool.
+    required: false
+    default: "rhysd"
+  github-repo-name:
+    description: The repository name for the actionlint tool.
+    required: false
+    default: "actionlint"
 outputs:
   version-semver:
     description: SemVer version
@@ -224,8 +232,8 @@ runs:
           core.setOutput('tool-executable-path', core.toPlatformPath(`${toolDirPath}/${toolExecutable}`))
       env:
         INPUT_TOOL_NAME: "actionlint"
-        INPUT_REPO_OWNER: "rhysd"
-        INPUT_REPO_NAME: "actionlint"
+        INPUT_REPO_OWNER: ${{ inputs.github-repo-owner }}
+        INPUT_REPO_NAME: ${{ inputs.github-repo-name }}
         INPUT_TOOL_SEMVER: ${{ inputs.version }}
         INPUT_GITHUB_SERVER_URL: ${{ inputs.github-server-url }}
 
